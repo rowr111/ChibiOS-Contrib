@@ -1,5 +1,5 @@
 /*
-    ChibiOS - Copyright (C) 2013-2015 Fabio Utzig
+    ChibiOS - Copyright (C) 2014-2015 Fabio Utzig
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -15,15 +15,15 @@
 */
 
 /**
- * @file    KL2x/serial_lld.h
- * @brief   Kinetis KL2x Serial Driver subsystem low level driver header.
+ * @file    K20x/serial_lld.h
+ * @brief   Kinetis K20x Serial Driver subsystem low level driver header.
  *
  * @addtogroup SERIAL
  * @{
  */
 
-#ifndef HAL_SERIAL_LLD_H_
-#define HAL_SERIAL_LLD_H_
+#ifndef _SERIAL_LLD_H_
+#define _SERIAL_LLD_H_
 
 #if HAL_USE_SERIAL || defined(__DOXYGEN__)
 
@@ -82,61 +82,11 @@
 #define KINETIS_SERIAL_UART2_PRIORITY        12
 #endif
 
-/**
- * @brief   UART3 interrupt priority level setting.
- */
-#if !defined(KINETIS_SERIAL_UART3_PRIORITY) || defined(__DOXYGEN__)
-#define KINETIS_SERIAL_UART3_PRIORITY        12
-#endif
-
-/**
- * @brief   UART0 clock source.
- */
-#if !defined(KINETIS_UART0_CLOCK_SRC) || defined(__DOXYGEN__)
-#define KINETIS_UART0_CLOCK_SRC              1 /* MCGFLLCLK clock, or MCGPLLCLK/2; or IRC48M */
-#endif
-
-/**
- * @brief   UART1 clock source.
- */
-#if !defined(KINETIS_UART1_CLOCK_SRC) || defined(__DOXYGEN__)
-#define KINETIS_UART1_CLOCK_SRC              1 /* IRC48M */
-#endif
-
-/**
- * @brief   UART3 clock source.
- */
-#if !defined(KINETIS_UART3_CLOCK_SRC) || defined(__DOXYGEN__)
-#define KINETIS_UART3_CLOCK_SRC              1 /* IRC48M */
-#endif
-
 /** @} */
 
 /*===========================================================================*/
 /* Derived constants and error checks.                                       */
 /*===========================================================================*/
-
-/** @brief  error checks */
-#if KINETIS_SERIAL_USE_UART0 && !KINETIS_HAS_SERIAL0
-#error "UART0 not present in the selected device"
-#endif
-
-#if KINETIS_SERIAL_USE_UART1 && !KINETIS_HAS_SERIAL1
-#error "UART1 not present in the selected device"
-#endif
-
-#if KINETIS_SERIAL_USE_UART2 && !KINETIS_HAS_SERIAL2
-#error "UART2 not present in the selected device"
-#endif
-
-#if KINETIS_SERIAL_USE_UART3 && !KINETIS_HAS_SERIAL3
-#error "UART3 not present in the selected device"
-#endif
-
-#if !(KINETIS_SERIAL_USE_UART0 || KINETIS_SERIAL_USE_UART1 || \
-      KINETIS_SERIAL_USE_UART2 || KINETIS_SERIAL_USE_UART3)
-#error "Serial driver activated but no UART peripheral assigned"
-#endif
 
 /*===========================================================================*/
 /* Driver data structures and types.                                         */
@@ -158,32 +108,6 @@ typedef struct {
 } SerialConfig;
 
 /**
- * @brief   Generic UART register structure.
- * @note    Individual UART register blocks (even within the same chip) can differ.
- */
-
-typedef struct {
-  volatile uint8_t*  bdh_p;
-  volatile uint8_t*  bdl_p;
-  volatile uint8_t*  c1_p;
-  volatile uint8_t*  c2_p;
-  volatile uint8_t*  c3_p;
-  volatile uint8_t*  c4_p;
-  volatile uint8_t*  s1_p;
-  volatile uint8_t*  s2_p;
-  volatile uint8_t*  d_p;
-  UART_TypeDef *uart_p;
-#if KINETIS_SERIAL_USE_UART0 && KINETIS_SERIAL0_IS_UARTLP
-  UARTLP_TypeDef *uartlp_p;
-#endif /* KINETIS_SERIAL_USE_UART0 && KINETIS_SERIAL0_IS_UARTLP */
-#if  (KINETIS_SERIAL_USE_UART0 && KINETIS_SERIAL0_IS_LPUART) \
-  || (KINETIS_SERIAL_USE_UART1 && KINETIS_SERIAL1_IS_LPUART) \
-  || (KINETIS_SERIAL_USE_UART3 && KINETIS_SERIAL3_IS_LPUART)
-  LPUART_TypeDef *lpuart_p;
-#endif /* KINETIS_SERIAL_USE_UART0 && KINETIS_SERIAL0_IS_LPUART */
-} UART_w_TypeDef;
-
-/**
  * @brief @p SerialDriver specific data.
  */
 #define _serial_driver_data                                                 \
@@ -200,7 +124,7 @@ typedef struct {
   uint8_t                   ob[SERIAL_BUFFERS_SIZE];                        \
   /* End of the mandatory fields.*/                                         \
   /* Pointer to the UART registers block.*/                                 \
-  UART_w_TypeDef            uart;
+  UART_TypeDef            *uart;
 
 /*===========================================================================*/
 /* Driver macros.                                                            */
@@ -222,10 +146,6 @@ extern SerialDriver SD2;
 extern SerialDriver SD3;
 #endif
 
-#if KINETIS_SERIAL_USE_UART3 && !defined(__DOXYGEN__)
-extern SerialDriver SD4;
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -238,6 +158,6 @@ extern "C" {
 
 #endif /* HAL_USE_SERIAL */
 
-#endif /* HAL_SERIAL_LLD_H_ */
+#endif /* _SERIAL_LLD_H_ */
 
 /** @} */
