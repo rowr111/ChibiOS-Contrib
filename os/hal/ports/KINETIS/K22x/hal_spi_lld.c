@@ -75,9 +75,11 @@
 #define DMAMUX_SPI_TX_SOURCE    15
 #endif
 
+#if 0
 #if KINETIS_SPI_USE_SPI1
 #define DMAMUX_SPI_RX_SOURCE    16
 #define DMAMUX_SPI_TX_SOURCE    16
+#endif
 #endif
 
 /*===========================================================================*/
@@ -153,6 +155,7 @@ static void spi_start_xfer(SPIDriver *spip, bool polling)
   }
 #endif
 
+#if 0
 #if KINETIS_SPI_USE_SPI1
     /* Enable receive dma and transmit dma */
     spip->spi->RSER = SPIx_RSER_RFDF_DIRS | SPIx_RSER_RFDF_RE |
@@ -187,6 +190,7 @@ static void spi_start_xfer(SPIDriver *spip, bool polling)
     DMA->SERQ = KINETIS_SPI1_TX_DMA_CHANNEL;
   }
 #endif
+#endif
   
 }
 
@@ -220,6 +224,7 @@ OSAL_IRQ_HANDLER(KINETIS_DMA0_IRQ_VECTOR) {
 
 #endif
 
+#if 0
 #if KINETIS_SPI_USE_SPI1 || defined(__DOXYGEN__)
 
 OSAL_IRQ_HANDLER(KINETIS_DMA0_IRQ_VECTOR) {
@@ -234,7 +239,7 @@ OSAL_IRQ_HANDLER(KINETIS_DMA0_IRQ_VECTOR) {
 
   OSAL_IRQ_EPILOGUE();
 }
-
+#endif
 #endif
 
 /*===========================================================================*/
@@ -347,7 +352,8 @@ void spi_lld_start(SPIDriver *spip) {
     DMA->TCD[KINETIS_SPI0_TX_DMA_CHANNEL].NBYTES_MLNO = spip->word_size;
     DMA->TCD[KINETIS_SPI0_TX_DMA_CHANNEL].CSR = DMA_CSR_DREQ_MASK;
 #endif
-
+    
+#if 0
 #if KINETIS_SPI_USE_SPI1
     /* Rx, select SPI Rx FIFO */
     DMAMUX->CHCFG[KINETIS_SPI1_RX_DMAMUX_CHANNEL] = DMAMUX_CHCFGn_ENBL |
@@ -387,6 +393,7 @@ void spi_lld_start(SPIDriver *spip) {
         DMA_ATTR_DSIZE(dma_size);
     DMA->TCD[KINETIS_SPI1_TX_DMA_CHANNEL].NBYTES_MLNO = spip->word_size;
     DMA->TCD[KINETIS_SPI1_TX_DMA_CHANNEL].CSR = DMA_CSR_DREQ_MASK;
+#endif
 #endif
   }
 }

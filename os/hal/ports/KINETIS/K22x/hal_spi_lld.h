@@ -83,9 +83,9 @@
 #error "SPI1 not present in the selected device"
 #endif
 
-#if KINETIS_SPI_USE_SPI0 && KINETIS_SPI_USE_SPI1
-#error "Only one SPI peripheral can be enabled"
-#endif
+//#if KINETIS_SPI_USE_SPI0 && KINETIS_SPI_USE_SPI1
+//#error "Only one SPI peripheral can be enabled"
+//#endif
 
 #if !(KINETIS_SPI_USE_SPI0 || KINETIS_SPI_USE_SPI1)
 #error "SPI driver activated but no SPI peripheral assigned"

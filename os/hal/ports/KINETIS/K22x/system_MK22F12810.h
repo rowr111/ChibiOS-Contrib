@@ -178,7 +178,7 @@ extern "C" {
 /* MCG_C7: OSCSEL=0 */
   #define SYSTEM_MCG_C7_VALUE          0x00U               /* MCG_C7 */
 /* OSC_CR: ERCLKEN=1,EREFSTEN=0,SC2P=0,SC4P=0,SC8P=0,SC16P=0 */
-  #define SYSTEM_OSC_CR_VALUE          0x80U               /* OSC_CR */
+  #define SYSTEM_OSC_CR_VALUE          0x82U               /* OSC_CR */
 /* SMC_PMCTRL: RUNM=0,STOPA=0,STOPM=0 */
   #define SYSTEM_SMC_PMCTRL_VALUE      0x00U               /* SMC_PMCTRL */
 /* SIM_CLKDIV1: OUTDIV1=0,OUTDIV2=0,OUTDIV4=1 */
@@ -205,7 +205,7 @@ extern "C" {
 /* MCG_C7: OSCSEL=0 */
   #define SYSTEM_MCG_C7_VALUE          0x00U               /* MCG_C7 */
 /* OSC_CR: ERCLKEN=1,EREFSTEN=0,SC2P=0,SC4P=0,SC8P=0,SC16P=0 */
-  #define SYSTEM_OSC_CR_VALUE          0x80U               /* OSC_CR */
+  #define SYSTEM_OSC_CR_VALUE          0x82U               /* OSC_CR */
 /* SMC_PMCTRL: RUNM=3,STOPA=0,STOPM=0 */
   #define SYSTEM_SMC_PMCTRL_VALUE      0x60U               /* SMC_PMCTRL */
 /* SIM_CLKDIV1: OUTDIV1=0,OUTDIV2=1,OUTDIV4=3 */
@@ -232,7 +232,7 @@ extern "C" {
 /* MCG_C7: OSCSEL=0 */
   #define SYSTEM_MCG_C7_VALUE          0x00U               /* MCG_C7 */
 /* OSC_CR: ERCLKEN=0,EREFSTEN=0,SC2P=0,SC4P=0,SC8P=0,SC16P=0 */
-  #define SYSTEM_OSC_CR_VALUE          0x00U               /* OSC_CR */
+  #define SYSTEM_OSC_CR_VALUE          0x02U               /* OSC_CR */
 /* SMC_PMCTRL: RUNM=0,STOPA=0,STOPM=0 */
   #define SYSTEM_SMC_PMCTRL_VALUE      0x00U               /* SMC_PMCTRL */
 /* SIM_CLKDIV1: OUTDIV1=0,OUTDIV2=0,OUTDIV4=4 */
@@ -259,7 +259,7 @@ extern "C" {
 /* MCG_C7: OSCSEL=0 */
   #define SYSTEM_MCG_C7_VALUE          0x00U               /* MCG_C7 */
 /* OSC_CR: ERCLKEN=0,EREFSTEN=0,SC2P=0,SC4P=0,SC8P=0,SC16P=0 */
-  #define SYSTEM_OSC_CR_VALUE          0x00U               /* OSC_CR */
+  #define SYSTEM_OSC_CR_VALUE          0x02U               /* OSC_CR */
 /* SMC_PMCTRL: RUNM=0,STOPA=0,STOPM=0 */
   #define SYSTEM_SMC_PMCTRL_VALUE      0x00U               /* SMC_PMCTRL */
 /* SIM_CLKDIV1: OUTDIV1=1,OUTDIV2=1,OUTDIV4=7 */
@@ -286,7 +286,7 @@ extern "C" {
 /* MCG_C7: OSCSEL=1 */
   #define SYSTEM_MCG_C7_VALUE          0x01U               /* MCG_C7 */
 /* OSC_CR: ERCLKEN=1,EREFSTEN=0,SC2P=0,SC4P=0,SC8P=0,SC16P=0 */
-  #define SYSTEM_OSC_CR_VALUE          0x80U               /* OSC_CR */
+  #define SYSTEM_OSC_CR_VALUE          0x82U               /* OSC_CR */
 /* SMC_PMCTRL: RUNM=3,STOPA=0,STOPM=0 */
   #define SYSTEM_SMC_PMCTRL_VALUE      0x60U               /* SMC_PMCTRL */
 /* SIM_CLKDIV1: OUTDIV1=0,OUTDIV2=1,OUTDIV4=3 */
@@ -315,7 +315,7 @@ extern "C" {
 /* MCG_C7: OSCSEL=1 */
   #define SYSTEM_MCG_C7_VALUE          0x01U               /* MCG_C7 */
 /* OSC_CR: ERCLKEN=1,EREFSTEN=0,SC2P=0,SC4P=0,SC8P=0,SC16P=0 */
-  #define SYSTEM_OSC_CR_VALUE          0x80U               /* OSC_CR */
+  #define SYSTEM_OSC_CR_VALUE          0x82U               /* OSC_CR */
 /* SMC_PMCTRL: RUNM=0,STOPA=0,STOPM=0 */
   #define SYSTEM_SMC_PMCTRL_VALUE      0x00U               /* SMC_PMCTRL */
 /* SIM_CLKDIV1: OUTDIV1=0,OUTDIV2=1,OUTDIV4=2 */
