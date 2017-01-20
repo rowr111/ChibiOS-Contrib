@@ -10319,9 +10319,11 @@ typedef struct {
 #define UART_MA2_MA(x)                           (((uint8_t)(((uint8_t)(x))<<UART_MA2_MA_SHIFT))&UART_MA2_MA_MASK)
 /* C4 Bit Fields */
 #define UART_C4_BRFA_MASK                        0x1Fu
+#define UARTx_C4_BRFA_MASK                        0x1Fu
 #define UART_C4_BRFA_SHIFT                       0
 #define UART_C4_BRFA_WIDTH                       5
 #define UART_C4_BRFA(x)                          (((uint8_t)(((uint8_t)(x))<<UART_C4_BRFA_SHIFT))&UART_C4_BRFA_MASK)
+#define UARTx_C4_BRFA(x)                          (((uint8_t)(((uint8_t)(x))<<UART_C4_BRFA_SHIFT))&UART_C4_BRFA_MASK)
 #define UART_C4_M10_MASK                         0x20u
 #define UART_C4_M10_SHIFT                        5
 #define UART_C4_M10_WIDTH                        1

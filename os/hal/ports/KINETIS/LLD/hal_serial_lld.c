@@ -303,11 +303,24 @@ static void configure_uart(SerialDriver *sdp, const SerialConfig *config) {
 #endif /* K20x */
 
 #if defined(K22x)
-  divisor = 102000000;
-  divisor = (divisor / (config->sc_speed * 17));
+  if( (sdp == &SD1) || (sdp == &SD2) || (sdp == &SD3) ) {  // hard-coded hax for XZ
+    if( (sdp == &SD1) || (sdp == &SD2)  ) {
+      // clocked off of core clock, 95977472
+      divisor = 0x3D; // this will give BDL = 1 after >> 5, BRFA = 0x1D = 1.90625
+    } else {
+      // clocked off of bus clock, 47988736
+      divisor = 0x20; // this is the best we can get :-/ it'll be 4% off, let's pray
+    }
+    *(uart->bdh_p) = UARTx_BDH_SBR(divisor >> 13) | (*(uart->bdh_p) & ~UARTx_BDH_SBR_MASK);
+    *(uart->bdl_p) = divisor >> 5;
+    *(uart->c4_p)  = UARTx_C4_BRFA(divisor) | (*(uart->c4_p) & ~UARTx_C4_BRFA_MASK);
+  } else { 
+    divisor = 102000000;
+    divisor = (divisor / (config->sc_speed * 17));
     
-  *(uart->bdh_p) = UARTx_BDH_SBR(divisor >> 8) | (*(uart->bdh_p) & ~UARTx_BDH_SBR_MASK);
-  *(uart->bdl_p) = UARTx_BDL_SBR(divisor) & 0xFF;
+    *(uart->bdh_p) = UARTx_BDH_SBR(divisor >> 8) | (*(uart->bdh_p) & ~UARTx_BDH_SBR_MASK);
+    *(uart->bdl_p) = UARTx_BDL_SBR(divisor) & 0xFF;
+  }
 #else
   divisor = (divisor * 2 + 1) / config->sc_speed;
 
