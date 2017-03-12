@@ -25,6 +25,8 @@
 #include "osal.h"
 #include "hal.h"
 
+#include "ui.h"
+
 #if HAL_USE_SERIAL || defined(__DOXYGEN__)
 
 /*===========================================================================*/
@@ -347,6 +349,12 @@ static void configure_uart(SerialDriver *sdp, const SerialConfig *config) {
 OSAL_IRQ_HANDLER(KINETIS_SERIAL0_IRQ_VECTOR) {
   OSAL_IRQ_PROLOGUE();
   serve_interrupt(&SD1);
+  
+  osalSysLockFromISR();
+  if( uigraph.bt_events[uigraph.log_index] < LOGMAX )
+    uigraph.bt_events[uigraph.log_index]++;
+  osalSysUnlockFromISR();
+  
   OSAL_IRQ_EPILOGUE();
 }
 #endif
@@ -355,6 +363,12 @@ OSAL_IRQ_HANDLER(KINETIS_SERIAL0_IRQ_VECTOR) {
 OSAL_IRQ_HANDLER(KINETIS_SERIAL1_IRQ_VECTOR) {
   OSAL_IRQ_PROLOGUE();
   serve_interrupt(&SD2);
+
+  osalSysLockFromISR();
+  if( uigraph.wifi_events[uigraph.log_index] < LOGMAX )
+    uigraph.wifi_events[uigraph.log_index]++;
+  osalSysUnlockFromISR();
+  
   OSAL_IRQ_EPILOGUE();
 }
 #endif
