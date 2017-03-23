@@ -25,8 +25,6 @@
 #include "osal.h"
 #include "hal.h"
 
-#include "ui.h"
-
 #if HAL_USE_SERIAL || defined(__DOXYGEN__)
 
 /*===========================================================================*/
@@ -305,6 +303,7 @@ static void configure_uart(SerialDriver *sdp, const SerialConfig *config) {
 #endif /* K20x */
 
 #if defined(K22x)
+#if 0
   if( (sdp == &SD1) || (sdp == &SD2) || (sdp == &SD3) ) {  // hard-coded hax for XZ
     if( (sdp == &SD1) || (sdp == &SD2)  ) {
       // clocked off of core clock, 95977472
@@ -316,13 +315,16 @@ static void configure_uart(SerialDriver *sdp, const SerialConfig *config) {
     *(uart->bdh_p) = UARTx_BDH_SBR(divisor >> 13) | (*(uart->bdh_p) & ~UARTx_BDH_SBR_MASK);
     *(uart->bdl_p) = divisor >> 5;
     *(uart->c4_p)  = UARTx_C4_BRFA(divisor) | (*(uart->c4_p) & ~UARTx_C4_BRFA_MASK);
-  } else { 
+  } else {
+#endif
     divisor = 102000000;
     divisor = (divisor / (config->sc_speed * 17));
     
     *(uart->bdh_p) = UARTx_BDH_SBR(divisor >> 8) | (*(uart->bdh_p) & ~UARTx_BDH_SBR_MASK);
     *(uart->bdl_p) = UARTx_BDL_SBR(divisor) & 0xFF;
+#if 0
   }
+#endif
 #else
   divisor = (divisor * 2 + 1) / config->sc_speed;
 
@@ -351,8 +353,6 @@ OSAL_IRQ_HANDLER(KINETIS_SERIAL0_IRQ_VECTOR) {
   serve_interrupt(&SD1);
   
   osalSysLockFromISR();
-  if( uigraph.bt_events[uigraph.log_index] < LOGMAX )
-    uigraph.bt_events[uigraph.log_index]++;
   osalSysUnlockFromISR();
   
   OSAL_IRQ_EPILOGUE();
@@ -365,8 +365,6 @@ OSAL_IRQ_HANDLER(KINETIS_SERIAL1_IRQ_VECTOR) {
   serve_interrupt(&SD2);
 
   osalSysLockFromISR();
-  if( uigraph.wifi_events[uigraph.log_index] < LOGMAX )
-    uigraph.wifi_events[uigraph.log_index]++;
   osalSysUnlockFromISR();
   
   OSAL_IRQ_EPILOGUE();
