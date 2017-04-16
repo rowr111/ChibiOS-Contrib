@@ -499,13 +499,14 @@ void spi_lld_ignore(SPIDriver *spip, size_t n) {
 
 // clocked off of bus clock @ 50MHz
 // BR(2) -> /5, PBR() -> /2, final speed is 50/10 = 5MHz
-#define KINETIS_SPI_TAR_BUSCLK_XZ(n)\
+// changed PBR(1) -> /3, so speed is now 50% slower...
+#define KINETIS_SPI_TAR_BUSCLK_XZ(n)		\
     SPIx_CTARn_FMSZ((n) - 1) | \
     SPIx_CTARn_CPOL | \
     SPIx_CTARn_CPHA | \
     SPIx_CTARn_DBR | \
-    SPIx_CTARn_PBR(0) | \
-    SPIx_CTARn_BR(2) | \
+    SPIx_CTARn_PBR(1) | \
+    SPIx_CTARn_BR(2) |	  \
     SPIx_CTARn_CSSCK(0) | \
     SPIx_CTARn_ASC(0) | \
     SPIx_CTARn_DT(0)
@@ -514,7 +515,8 @@ void spiRuntSetup(SPIDriver *spip) {
   nvicDisableVector(DMA1_IRQn); // disable DMA, as this SPI lacks bidirectional DMA
   nvicEnableVector(SPI1_IRQn, KINETIS_SPI_SPI1_IRQ_PRIORITY); // use interrupts instead
   
-  spip->spi->MCR = SPIx_MCR_MSTR | SPIx_MCR_CLR_TXF | SPIx_MCR_CLR_RXF;
+  spip->spi->MCR = SPIx_MCR_MSTR | SPIx_MCR_CLR_TXF | \
+    SPIx_MCR_CLR_RXF | SPIx_MCR_DIS_RXF | SPIx_MCR_DIS_TXF | SPIx_MCR_CLR_TXF;
   spip->spi->CTAR[0] = KINETIS_SPI_TAR_BUSCLK_XZ(8);  // 8-bit frame size
   
   //  spip->spi->MCR |= SPIx_MCR_PCSIS(1); // set to active low for CS0
@@ -586,6 +588,7 @@ void spi_start_xfer_runt(SPIDriver *spip) {
   if( spip->txbuf == NULL )
     spip->txbuf = spip->rxbuf;  // dummy send rx buf data
 
+  spip->spi->MCR |= SPIx_MCR_DIS_RXF | SPIx_MCR_CLR_RXF | SPIx_MCR_DIS_TXF | SPIx_MCR_CLR_TXF; // disable fifos
   spip->spi->MCR &= ~SPIx_MCR_HALT; // clear the halt bit, chibios sets it every time the transfer is done
   // palClearPad(IOPORT4, 4); // assert CS line  // this is now on "manual" control
   
