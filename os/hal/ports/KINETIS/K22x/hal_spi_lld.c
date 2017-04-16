@@ -191,7 +191,7 @@ static void spi_start_xfer(SPIDriver *spip, bool polling)
   }
 #endif
 #endif
-  
+
 }
 
 static void spi_stop_xfer(SPIDriver *spip)
@@ -224,22 +224,32 @@ OSAL_IRQ_HANDLER(KINETIS_DMA0_IRQ_VECTOR) {
 
 #endif
 
-#if 0
 #if KINETIS_SPI_USE_SPI1 || defined(__DOXYGEN__)
 
-OSAL_IRQ_HANDLER(KINETIS_DMA0_IRQ_VECTOR) {
+OSAL_IRQ_HANDLER(KINETIS_SPI1_IRQ_VECTOR) {
   OSAL_IRQ_PROLOGUE();
 
+  if( SPID2.rxbuf != NULL ) {
+    SPID2.rxbuf[ (SPID2.spi->TCR >> 16) - 1 ] = SPID2.spi->POPR;
+  }
+
   /* Clear bit 0 in Interrupt Request Register (INT) by writing 0 to CINT */
-  DMA->CINT = KINETIS_SPI1_RX_DMA_CHANNEL;
-
-  spi_stop_xfer(&SPID2);
-
-  _spi_isr_code(&SPID2);
+  //DMA->CINT = KINETIS_SPI1_RX_DMA_CHANNEL; // no DMA, instead check and refill
+  if( SPID2.count > (SPID2.spi->TCR >> 16) ) {
+    // clear the TCF
+    SPID2.spi->SR |= SPIx_SR_TCF;
+    // kick off another transfer, and we'll be back here again...
+    //    SPID2.spi->PUSHR = SPID2.txbuf[(SPID2.spi->TCR >> 16)] | SPIx_PUSHR_PCS(1) | SPI_PUSHR_CONT_MASK;
+    SPID2.spi->PUSHR = SPID2.txbuf[(SPID2.spi->TCR >> 16)];
+  } else {
+    SPID2.spi->RSER &= ~SPIx_RSER_TCF_RE; // disable interrupt on frame complete, we're done.
+    // palSetPad(IOPORT4, 4); // de-assert CS line  // now under manual control
+    spi_stop_xfer(&SPID2);
+    _spi_isr_code(&SPID2);
+  }
 
   OSAL_IRQ_EPILOGUE();
 }
-#endif
 #endif
 
 /*===========================================================================*/
@@ -394,6 +404,10 @@ void spi_lld_start(SPIDriver *spip) {
     DMA->TCD[KINETIS_SPI1_TX_DMA_CHANNEL].NBYTES_MLNO = spip->word_size;
     DMA->TCD[KINETIS_SPI1_TX_DMA_CHANNEL].CSR = DMA_CSR_DREQ_MASK;
 #endif
+#else
+#if KINETIS_SPI_USE_SPI1
+    
+#endif
 #endif
   }
 }
@@ -411,6 +425,7 @@ void spi_lld_stop(SPIDriver *spip) {
   if (spip->state == SPI_READY) {
 
     nvicDisableVector(DMA0_IRQn);
+    nvicDisableVector(SPI1_IRQn);
 
     SIM->SCGC7 &= ~SIM_SCGC7_DMA;
     SIM->SCGC6 &= ~SIM_SCGC6_DMAMUX;
@@ -482,6 +497,110 @@ void spi_lld_ignore(SPIDriver *spip, size_t n) {
   spi_start_xfer(spip, false);
 }
 
+// clocked off of bus clock @ 50MHz
+// BR(2) -> /5, PBR() -> /2, final speed is 50/10 = 5MHz
+#define KINETIS_SPI_TAR_BUSCLK_XZ(n)\
+    SPIx_CTARn_FMSZ((n) - 1) | \
+    SPIx_CTARn_CPOL | \
+    SPIx_CTARn_CPHA | \
+    SPIx_CTARn_DBR | \
+    SPIx_CTARn_PBR(0) | \
+    SPIx_CTARn_BR(2) | \
+    SPIx_CTARn_CSSCK(0) | \
+    SPIx_CTARn_ASC(0) | \
+    SPIx_CTARn_DT(0)
+
+void spiRuntSetup(SPIDriver *spip) {
+  nvicDisableVector(DMA1_IRQn); // disable DMA, as this SPI lacks bidirectional DMA
+  nvicEnableVector(SPI1_IRQn, KINETIS_SPI_SPI1_IRQ_PRIORITY); // use interrupts instead
+  
+  spip->spi->MCR = SPIx_MCR_MSTR | SPIx_MCR_CLR_TXF | SPIx_MCR_CLR_RXF;
+  spip->spi->CTAR[0] = KINETIS_SPI_TAR_BUSCLK_XZ(8);  // 8-bit frame size
+  
+  //  spip->spi->MCR |= SPIx_MCR_PCSIS(1); // set to active low for CS0
+  palSetPad(IOPORT4, 4); // clear the CS line
+}
+
+// because SPID2 on this chip doesn't have a proper FIFO/DMA system, do something
+// much stupider to get things going
+#if 0
+void spi_start_xfer_runt(SPIDriver *spip) {
+  uint32_t i = 0;
+  uint32_t pushr;
+  uint32_t count;
+  uint8_t *data;
+  uint8_t *rxdata;
+
+  count = spip->count;
+  data = (uint8_t *) spip->txbuf;
+  rxdata = (uint8_t *) spip->rxbuf;
+  if( data == NULL )
+    data = rxdata; // for Rx-only, send dummy bytes, eg the rx buffer
+  
+  // poll loop to send data
+  while( i < count ) {
+    while ( (spip->spi->SR & SPI_SR_TFFF_MASK) && (i < count) ) {
+      if( i == 0 ) // mark first with clear transfer count
+	pushr = SPI_PUSHR_CONT_MASK | SPI_PUSHR_CTCNT_MASK | data[i];
+      else
+	pushr = SPI_PUSHR_CONT_MASK | data[i];
+      
+      spip->spi->PUSHR = pushr;
+      i++;
+      
+      //      while( !(spip->spi->SR & SPI_SR_TCF_MASK) )
+      //	; // wait for transfer to complete, because TFFF lies
+      while( (spip->spi->TCR >> 16) != i )
+	; // wait for transfer to complete
+
+      if( rxdata != NULL )
+	rxdata[i-1] = (uint8_t) spip->spi->POPR;
+    }
+  }
+
+  // note that checking TCF isn't good enough -- the CPU runs fast enough
+  // that TCR doesn't update for a few cycles after TCF and you'll get
+  // an out of date TCR that's short the last transfer
+  // so we just wait until the TCR reflects the actual amount received
+  
+  while( (spip->spi->TCR >> 16) != count )
+    ; // wait for transfer to complete
+  
+  //  return (spip->spi->TCR >> 16);
+  
+  //  _spi_isr_code(&SPID2); // fill in the epilogue manually
+  SPID2.state = SPI_READY;
+  //osalSysLock(); // already in "S" state
+  osalThreadResumeS(&(SPID2.thread), MSG_OK);
+  //osalSysUnlock();
+  
+  return;
+}
+#else
+void spi_start_xfer_runt(SPIDriver *spip) {
+  uint32_t pushr;
+
+  if( spip->count == 0 )
+    return;  // abort if we were called with null data
+
+  if( spip->txbuf == NULL )
+    spip->txbuf = spip->rxbuf;  // dummy send rx buf data
+
+  spip->spi->MCR &= ~SPIx_MCR_HALT; // clear the halt bit, chibios sets it every time the transfer is done
+  // palClearPad(IOPORT4, 4); // assert CS line  // this is now on "manual" control
+  
+  spip->spi->SR |= SPIx_SR_TCF; // clear the TCF so it can flip
+  spip->spi->RSER |= SPIx_RSER_TCF_RE; // enable interrupt on frame complete, to initiate chaining
+  
+  
+  //  pushr = SPI_PUSHR_CONT_MASK | SPI_PUSHR_CTCNT_MASK | SPIx_PUSHR_PCS(1) | spip->txbuf[0]; // clear TCR with push
+  pushr = SPI_PUSHR_CTCNT_MASK | spip->txbuf[0]; // clear TCR with push
+  spip->spi->PUSHR = pushr; // kicks off a send of one data, ISR fires when done
+  
+  return;
+}
+#endif
+
 /**
  * @brief   Exchanges data on the SPI bus.
  * @details This asynchronous function starts a simultaneous transmit/receive
@@ -504,7 +623,10 @@ void spi_lld_exchange(SPIDriver *spip, size_t n,
   spip->rxbuf = rxbuf;
   spip->txbuf = txbuf;
 
-  spi_start_xfer(spip, false);
+  if( spip == &SPID1 ) 
+    spi_start_xfer(spip, false);
+  else
+    spi_start_xfer_runt(spip);
 }
 
 /**
@@ -526,7 +648,10 @@ void spi_lld_send(SPIDriver *spip, size_t n, const void *txbuf) {
   spip->rxbuf = NULL;
   spip->txbuf = (void *)txbuf;
 
-  spi_start_xfer(spip, false);
+  if( spip == &SPID1 ) 
+    spi_start_xfer(spip, false);
+  else
+    spi_start_xfer_runt(spip);
 }
 
 /**
@@ -548,7 +673,10 @@ void spi_lld_receive(SPIDriver *spip, size_t n, void *rxbuf) {
   spip->rxbuf = rxbuf;
   spip->txbuf = NULL;
 
-  spi_start_xfer(spip, false);
+  if( spip == &SPID1 ) 
+    spi_start_xfer(spip, false);
+  else
+    spi_start_xfer_runt(spip);
 }
 
 /**
