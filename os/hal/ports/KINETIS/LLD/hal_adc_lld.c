@@ -52,13 +52,15 @@ ADCDriver ADCD1;
 static void calibrate(ADCDriver *adcp) {
 
   /* Clock Divide by 8, Use Bus Clock Div 2 */
-  /* At 48MHz this results in ADCCLK of 48/8/2 == 3MHz */
+  /* At 96MHz this results in ADCCLK of 96/8 == 12MHz */
   adcp->adc->CFG1 = ADCx_CFG1_ADIV(ADCx_CFG1_ADIV_DIV_8) |
-      ADCx_CFG1_ADICLK(ADCx_CFG1_ADIVCLK_BUS_CLOCK_DIV_2);
+      ADCx_CFG1_ADICLK(ADCx_CFG1_ADIVCLK_BUS_CLOCK);
 
   /* Use software trigger and disable DMA etc. */
   adcp->adc->SC2 = 0;
 
+  adcp->adc->SC1A = ADCx_SC1n_ADCH_BANDGAP; // use the bandgap for calibration
+  
   /* Enable Hardware Average, Average 32 Samples, Calibrate */
   adcp->adc->SC3 = ADCx_SC3_AVGE |
       ADCx_SC3_AVGS(ADCx_SC3_AVGS_AVERAGE_32_SAMPLES) |

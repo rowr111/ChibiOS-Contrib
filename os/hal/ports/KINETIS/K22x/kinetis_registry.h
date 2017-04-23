@@ -144,6 +144,11 @@
 
 /* LPTMR attributes.*/
 #define KINETIS_LPTMR0_IRQ_VECTOR   Vector128
+
+/* I2S attributes. */
+#define KINETIS_HAS_I2S0            TRUE
+#define KINETIS_I2S0_RX_VECTOR      VectorB4
+#define KINETIS_I2S0_TX_VECTOR      VectorB0
 /** @} */
 
 

@@ -25,7 +25,9 @@
 #ifndef _I2S_LLD_H_
 #define _I2S_LLD_H_
 
-#include "mk22f12_extensions.h"
+#include "mk22f10_features.h"
+#include "mk22f10_extensions.h"
+#include "fsl_sim_hal.h"
 #include "mcg_lld.h"
 
 #if (HAL_USE_I2S == TRUE) || defined(__DOXYGEN__)

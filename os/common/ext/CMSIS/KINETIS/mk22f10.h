@@ -6454,17 +6454,19 @@ typedef struct {
 
 /* C1 Bit Fields */
 #define MCG_C1_IREFSTEN_MASK                     0x1u
+#define MCG_C1_IREFSTEN                     0x1u
 #define MCG_C1_IREFSTEN_SHIFT                    0
 #define MCG_C1_IREFSTEN_WIDTH                    1
-#define MCG_C1_IREFSTEN(x)                       (((uint8_t)(((uint8_t)(x))<<MCG_C1_IREFSTEN_SHIFT))&MCG_C1_IREFSTEN_MASK)
+//#define MCG_C1_IREFSTEN(x)                       (((uint8_t)(((uint8_t)(x))<<MCG_C1_IREFSTEN_SHIFT))&MCG_C1_IREFSTEN_MASK)
 #define MCG_C1_IRCLKEN_MASK                      0x2u
 #define MCG_C1_IRCLKEN_SHIFT                     1
 #define MCG_C1_IRCLKEN_WIDTH                     1
 #define MCG_C1_IRCLKEN(x)                        (((uint8_t)(((uint8_t)(x))<<MCG_C1_IRCLKEN_SHIFT))&MCG_C1_IRCLKEN_MASK)
 #define MCG_C1_IREFS_MASK                        0x4u
+#define MCG_C1_IREFS                       0x4u
 #define MCG_C1_IREFS_SHIFT                       2
 #define MCG_C1_IREFS_WIDTH                       1
-#define MCG_C1_IREFS(x)                          (((uint8_t)(((uint8_t)(x))<<MCG_C1_IREFS_SHIFT))&MCG_C1_IREFS_MASK)
+//#define MCG_C1_IREFS(x)                          (((uint8_t)(((uint8_t)(x))<<MCG_C1_IREFS_SHIFT))&MCG_C1_IREFS_MASK)
 #define MCG_C1_FRDIV_MASK                        0x38u
 #define MCG_C1_FRDIV_SHIFT                       3
 #define MCG_C1_FRDIV_WIDTH                       3
@@ -6483,13 +6485,15 @@ typedef struct {
 #define MCG_C2_LP_WIDTH                          1
 #define MCG_C2_LP(x)                             (((uint8_t)(((uint8_t)(x))<<MCG_C2_LP_SHIFT))&MCG_C2_LP_MASK)
 #define MCG_C2_EREFS_MASK                        0x4u
+#define MCG_C2_EREFS0                        0x4u
 #define MCG_C2_EREFS_SHIFT                       2
 #define MCG_C2_EREFS_WIDTH                       1
 #define MCG_C2_EREFS(x)                          (((uint8_t)(((uint8_t)(x))<<MCG_C2_EREFS_SHIFT))&MCG_C2_EREFS_MASK)
 #define MCG_C2_HGO_MASK                          0x8u
+#define MCG_C2_HGO                          0x8u
 #define MCG_C2_HGO_SHIFT                         3
 #define MCG_C2_HGO_WIDTH                         1
-#define MCG_C2_HGO(x)                            (((uint8_t)(((uint8_t)(x))<<MCG_C2_HGO_SHIFT))&MCG_C2_HGO_MASK)
+//#define MCG_C2_HGO(x)                            (((uint8_t)(((uint8_t)(x))<<MCG_C2_HGO_SHIFT))&MCG_C2_HGO_MASK)
 #define MCG_C2_RANGE_MASK                        0x30u
 #define MCG_C2_RANGE_SHIFT                       4
 #define MCG_C2_RANGE_WIDTH                       2
@@ -9276,7 +9280,8 @@ typedef struct {
 #define SIM_SCGC6_I2S_MASK                       0x8000u
 #define SIM_SCGC6_I2S_SHIFT                      15
 #define SIM_SCGC6_I2S_WIDTH                      1
-#define SIM_SCGC6_I2S(x)                         (((uint32_t)(((uint32_t)(x))<<SIM_SCGC6_I2S_SHIFT))&SIM_SCGC6_I2S_MASK)
+#define SIM_SCGC6_I2S                       0x8000u
+//#define SIM_SCGC6_I2S(x)                         (((uint32_t)(((uint32_t)(x))<<SIM_SCGC6_I2S_SHIFT))&SIM_SCGC6_I2S_MASK)
 #define SIM_SCGC6_CRC_MASK                       0x40000u
 #define SIM_SCGC6_CRC_SHIFT                      18
 #define SIM_SCGC6_CRC_WIDTH                      1

@@ -580,7 +580,7 @@ uint32_t CLOCK_HAL_GetPll0Clk(MCG_TypeDef * base)
 {
     uint32_t mcgpll0clk;
     uint8_t  divider;
-
+#error "wtf"
     /* If PLL0 is not enabled, return 0. */
     if (!(MCG_BRD_S_PLLST(base) || MCG_BRD_C5_PLLCLKEN0(base)))
     {
@@ -678,6 +678,7 @@ uint32_t CLOCK_HAL_GetPll0RefFreq(MCG_TypeDef * base)
 uint32_t CLOCK_HAL_GetPll0Clk(MCG_TypeDef * base)
 {
     uint32_t mcgpll0clk;
+#error "wtf"
 
     mcgpll0clk = CLOCK_HAL_GetPll0RefFreq(base);
     mcgpll0clk *= 375U;

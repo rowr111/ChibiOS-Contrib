@@ -28,15 +28,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#if !defined(__FSL_SIM_HAL_K22F12810_H__)
-#define __FSL_SIM_HAL_K22F12810_H__
+#if !defined(__FSL_SIM_HAL_K22F51212_H__)
+#define __FSL_SIM_HAL_K22F51212_H__
 
 /*!
- * @addtogroup sim_hal_k22f12810
+ * @addtogroup sim_hal_k22f51212
  * @{
  */
-
-/*! @file fsl_sim_hal_K22F12810.h */
+/*! @file*/
 
 /*******************************************************************************
  * Definitions
@@ -47,7 +46,7 @@ typedef enum _clock_wdog_src_t
     kClockWdogSrcLpoClk,       /*!< LPO                                          */
     kClockWdogSrcAltClk,       /*!< Alternative clock, for this SOC it is Bus clock. */
 #if (defined(DOXYGEN_OUTPUT) && (DOXYGEN_OUTPUT))
-} clock_wdog_src_k22f12810_t;
+} clock_wdog_src_k22f51212_t;
 #else
 } clock_wdog_src_t;
 #endif
@@ -58,7 +57,7 @@ typedef enum _clock_trace_src_t
     kClockTraceSrcMcgoutClk,       /*!< MCG out clock  */
     kClockTraceSrcCoreClk,         /*!< core clock     */
 #if (defined(DOXYGEN_OUTPUT) && (DOXYGEN_OUTPUT))
-} clock_trace_src_k22f12810_t;
+} clock_trace_src_k22f51212_t;
 #else
 } clock_trace_src_t;
 #endif
@@ -69,7 +68,7 @@ typedef enum _clock_port_filter_src_t
     kClockPortFilterSrcBusClk,       /*!< Bus clock */
     kClockPortFilterSrcLpoClk,       /*!< LPO       */
 #if (defined(DOXYGEN_OUTPUT) && (DOXYGEN_OUTPUT))
-} clock_port_filter_src_k22f12810_t;
+} clock_port_filter_src_k22f51212_t;
 #else
 } clock_port_filter_src_t;
 #endif
@@ -82,7 +81,7 @@ typedef enum _clock_lptmr_src_t
     kClockLptmrSrcEr32kClk,             /*!< ERCLK32K clock */
     kClockLptmrSrcOsc0erClkUndiv,       /*!< OSCERCLK_UNDIV clock */
 #if (defined(DOXYGEN_OUTPUT) && (DOXYGEN_OUTPUT))
-} clock_lptmr_src_k22f12810_t;
+} clock_lptmr_src_k22f51212_t;
 #else
 } clock_lptmr_src_t;
 #endif
@@ -90,10 +89,10 @@ typedef enum _clock_lptmr_src_t
 /*! @brief SIM USB FS clock source */
 typedef enum _clock_usbfs_src
 {
-    kClockUsbfsSrcExt,       /*!< External bypass clock (USB_CLKIN) */
-    kClockUsbfsSrcPllFllSel  /*!< Clock divider USB FS clock        */
+    kClockUsbfsSrcExt,       /*!< External bypass clock (USB_CLKIN)      */
+    kClockUsbfsSrcPllFllSel, /*!< Clock divider USB FS clock             */
 #if (defined(DOXYGEN_OUTPUT) && (DOXYGEN_OUTPUT))
-} clock_usbfs_src_k22f12810_t;
+} clock_usbfs_src_k22f51212_t;
 #else
 } clock_usbfs_src_t;
 #endif
@@ -106,7 +105,7 @@ typedef enum _clock_lpuart_src
     kClockLpuartSrcOsc0erClk,   /*!< OSCERCLK */
     kClockLpuartSrcMcgIrClk     /*!< MCGIRCLK */
 #if (defined(DOXYGEN_OUTPUT) && (DOXYGEN_OUTPUT))
-} clock_lpuart_src_k22f12810_t;
+} clock_lpuart_src_k22f51212_t;
 #else
 } clock_lpuart_src_t;
 #endif
@@ -116,9 +115,9 @@ typedef enum _clock_sai_src
 {
     kClockSaiSrcSysClk     = 0U,  /*!< SYSCLK     */
     kClockSaiSrcOsc0erClk  = 1U,  /*!< OSC0ERCLK  */
-    kClockSaiSrcPllFllSel  = 3U   /*!< MCGPLLCLK  */
+    kClockSaiSrcPllFllSel  = 3U   /*!< MCGPLLFLLCLK  */
 #if (defined(DOXYGEN_OUTPUT) && (DOXYGEN_OUTPUT))
-} clock_sai_src_k22f12810_t;
+} clock_sai_src_k22f51212_t;
 #else
 } clock_sai_src_t;
 #endif
@@ -127,9 +126,10 @@ typedef enum _clock_sai_src
 typedef enum _clock_pllfll_sel
 {
     kClockPllFllSelFll    = 0U,    /*!< Fll clock  */
+    kClockPllFllSelPll    = 1U,    /*!< Pll0 clock */
     kClockPllFllSelIrc48M = 3U     /*!< IRC48MCLK  */
 #if (defined(DOXYGEN_OUTPUT) && (DOXYGEN_OUTPUT))
-} clock_pllfll_sel_k22f12810_t;
+} clock_pllfll_sel_k22f51212_t;
 #else
 } clock_pllfll_sel_t;
 #endif
@@ -139,9 +139,9 @@ typedef enum _clock_er32k_src
 {
     kClockEr32kSrcOsc0 = 0U, /*!< OSC0 clock (OSC032KCLK).  */
     kClockEr32kSrcRtc  = 2U, /*!< RTC 32k clock .           */
-    kClockEr32kSrcLpo  = 3U  /*!< LPO clock.                */
+    kClockEr32kSrcLpo  = 3U, /*!< LPO clock.                */
 #if (defined(DOXYGEN_OUTPUT) && (DOXYGEN_OUTPUT))
-} clock_er32k_src_k22f12810_t;
+} clock_er32k_src_k22f51212_t;
 #else
 } clock_er32k_src_t;
 #endif
@@ -149,14 +149,15 @@ typedef enum _clock_er32k_src
 /*! @brief SIM CLKOUT_SEL clock source select */
 typedef enum _clock_clkout_src
 {
+    kClockClkoutSelFlexbusClk  = 0U,  /*!< Flexbus clock  */
     kClockClkoutSelFlashClk    = 2U,  /*!< Flash clock    */
     kClockClkoutSelLpoClk      = 3U,  /*!< LPO clock      */
     kClockClkoutSelMcgIrClk    = 4U,  /*!< MCGIRCLK       */
     kClockClkoutSelRtc         = 5U,  /*!< RTC 32k clock  */
     kClockClkoutSelOsc0erClk   = 6U,  /*!< OSC0ERCLK      */
-    kClockClkoutSelIrc48M      = 7U   /*!< IRC48MCLK      */
+    kClockClkoutSelIrc48M      = 7U,  /*!< IRC48MCLK      */
 #if (defined(DOXYGEN_OUTPUT) && (DOXYGEN_OUTPUT))
-} clock_clkout_src_k22f12810_t;
+} clock_clkout_src_k22f51212_t;
 #else
 } clock_clkout_src_t;
 #endif
@@ -165,9 +166,9 @@ typedef enum _clock_clkout_src
 typedef enum _clock_rtcout_src
 {
     kClockRtcoutSrc1Hz,        /*!< 1Hz clock      */
-    kClockRtcoutSrc32kHz       /*!< 32kHz clock    */
+    kClockRtcoutSrc32kHz,      /*!< 32kHz clock    */
 #if (defined(DOXYGEN_OUTPUT) && (DOXYGEN_OUTPUT))
-} clock_rtcout_src_k22f12810_t;
+} clock_rtcout_src_k22f51212_t;
 #else
 } clock_rtcout_src_t;
 #endif
@@ -177,9 +178,9 @@ typedef enum _clock_osc32kout_sel
 {
     kClockOsc32koutNone  = 0U,    /*!< ERCLK32K is not output.      */
     kClockOsc32koutPte0  = 1U,    /*!< ERCLK32K is output on PTE0.  */
-    kClockOsc32koutPte26 = 2U     /*!< ERCLK32K is output on PTE26. */
+    kClockOsc32koutPte26 = 2U,    /*!< ERCLK32K is output on PTE26. */
 #if (defined(DOXYGEN_OUTPUT) && (DOXYGEN_OUTPUT))
-} clock_osc32kout_sel_k22f12810_t;
+} clock_osc32kout_sel_k22f51212_t;
 #else
 } clock_osc32kout_sel_t;
 #endif
@@ -187,10 +188,10 @@ typedef enum _clock_osc32kout_sel
 /*! @brief SIM USB voltage regulator in standby mode setting during stop modes */
 typedef enum _sim_usbsstby_mode
 {
-    kSimUsbsstbyNoRegulator,     /*!< regulator not in standby during Stop modes */
-    kSimUsbsstbyWithRegulator    /*!< regulator in standby during Stop modes */
+    kSimUsbsstbyNoRegulator,        /*!< regulator not in standby during Stop modes */
+    kSimUsbsstbyWithRegulator       /*!< regulator in standby during Stop modes */
 #if (defined(DOXYGEN_OUTPUT) && (DOXYGEN_OUTPUT))
-} sim_usbsstby_mode_k22f12810_t;
+} sim_usbsstby_mode_k22f51212_t;
 #else
 } sim_usbsstby_mode_t;
 #endif
@@ -198,10 +199,10 @@ typedef enum _sim_usbsstby_mode
 /*! @brief SIM USB voltage regulator in standby mode setting during VLPR and VLPW modes */
 typedef enum _sim_usbvstby_mode
 {
-    kSimUsbvstbyNoRegulator,     /*!< regulator not in standby during VLPR and VLPW modes */
-    kSimUsbvstbyWithRegulator    /*!< regulator in standby during VLPR and VLPW modes */
+    kSimUsbvstbyNoRegulator,        /*!< regulator not in standby during VLPR and VLPW modes */
+    kSimUsbvstbyWithRegulator       /*!< regulator in standby during VLPR and VLPW modes */
 #if (defined(DOXYGEN_OUTPUT) && (DOXYGEN_OUTPUT))
-} sim_usbvstby_mode_k22f12810_t;
+} sim_usbvstby_mode_k22f51212_t;
 #else
 } sim_usbvstby_mode_t;
 #endif
@@ -209,10 +210,10 @@ typedef enum _sim_usbvstby_mode
 /*! @brief SIM ADCx pre-trigger select */
 typedef enum _sim_adc_pretrg_sel
 {
-    kSimAdcPretrgselA,        /*!< Pre-trigger A selected for ADCx */
-    kSimAdcPretrgselB         /*!< Pre-trigger B selected for ADCx */
+    kSimAdcPretrgselA,              /*!< Pre-trigger A selected for ADCx */
+    kSimAdcPretrgselB               /*!< Pre-trigger B selected for ADCx */
 #if (defined(DOXYGEN_OUTPUT) && (DOXYGEN_OUTPUT))
-} sim_adc_pretrg_sel_k22f12810_t;
+} sim_adc_pretrg_sel_k22f51212_t;
 #else
 } sim_adc_pretrg_sel_t;
 #endif
@@ -220,21 +221,22 @@ typedef enum _sim_adc_pretrg_sel
 /*! @brief SIM ADCx trigger select */
 typedef enum _sim_adc_trg_sel
 {
-    kSimAdcTrgselExt            = 0U,  /*!< External trigger                */
-    kSimAdcTrgSelHighSpeedComp0 = 1U,  /*!< High speed comparator 0 output  */
-    kSimAdcTrgSelHighSpeedComp1 = 2U,  /*!< High speed comparator 1 output  */
-    kSimAdcTrgSelPit0           = 4U,  /*!< PIT trigger 0                   */
-    kSimAdcTrgSelPit1           = 5U,  /*!< PIT trigger 1                   */
-    kSimAdcTrgSelPit2           = 6U,  /*!< PIT trigger 2                   */
-    kSimAdcTrgSelPit3           = 7U,  /*!< PIT trigger 3                   */
-    kSimAdcTrgSelFtm0           = 8U,  /*!< FTM0 trigger                    */
-    kSimAdcTrgSelFtm1           = 9U,  /*!< FTM1 trigger                    */
-    kSimAdcTrgSelFtm2           = 10U, /*!< FTM2 trigger                    */
-    kSimAdcTrgSelRtcAlarm       = 12U, /*!< RTC alarm                       */
-    kSimAdcTrgSelRtcSec         = 13U, /*!< RTC seconds                     */
-    kSimAdcTrgSelLptimer        = 14U, /*!< Low-power timer trigger         */
+    kSimAdcTrgselExt            = 0U,    /*!< External trigger                */
+    kSimAdcTrgSelHighSpeedComp0 = 1U,    /*!< High speed comparator 0 output  */
+    kSimAdcTrgSelHighSpeedComp1 = 2U,    /*!< High speed comparator 1 output  */
+    kSimAdcTrgSelPit0           = 4U,    /*!< PIT trigger 0                   */
+    kSimAdcTrgSelPit1           = 5U,    /*!< PIT trigger 1                   */
+    kSimAdcTrgSelPit2           = 6U,    /*!< PIT trigger 2                   */
+    kSimAdcTrgSelPit3           = 7U,    /*!< PIT trigger 3                   */
+    kSimAdcTrgSelFtm0           = 8U,    /*!< FTM0 trigger                    */
+    kSimAdcTrgSelFtm1           = 9U,    /*!< FTM1 trigger                    */
+    kSimAdcTrgSelFtm2           = 10U,   /*!< FTM2 trigger                    */
+    kSimAdcTrgSelFtm3           = 11U,   /*!< FTM3 trigger                    */
+    kSimAdcTrgSelRtcAlarm       = 12U,   /*!< RTC alarm                       */
+    kSimAdcTrgSelRtcSec         = 13U,   /*!< RTC seconds                     */
+    kSimAdcTrgSelLptimer        = 14U,   /*!< Low-power timer trigger         */
 #if (defined(DOXYGEN_OUTPUT) && (DOXYGEN_OUTPUT))
-} sim_adc_trg_sel_k22f12810_t;
+} sim_adc_trg_sel_k22f51212_t;
 #else
 } sim_adc_trg_sel_t;
 #endif
@@ -246,7 +248,7 @@ typedef enum _sim_lpuart_rxsrc
     kSimLpuartRxsrcCmp0,              /*!< CMP0          */
     kSimLpuartRxsrcCmp1,              /*!< CMP1          */
 #if (defined(DOXYGEN_OUTPUT) && (DOXYGEN_OUTPUT))
-} sim_lpuart_rxsrc_k22f12810_t;
+} sim_lpuart_rxsrc_k22f51212_t;
 #else
 } sim_lpuart_rxsrc_t;
 #endif
@@ -258,7 +260,7 @@ typedef enum _sim_uart_rxsrc
     kSimUartRxsrcCmp0,              /*!< CMP0          */
     kSimUartRxsrcCmp1,              /*!< CMP1          */
 #if (defined(DOXYGEN_OUTPUT) && (DOXYGEN_OUTPUT))
-} sim_uart_rxsrc_k22f12810_t;
+} sim_uart_rxsrc_k22f51212_t;
 #else
 } sim_uart_rxsrc_t;
 #endif
@@ -266,11 +268,11 @@ typedef enum _sim_uart_rxsrc
 /*! @brief SIM UART transmit data source select */
 typedef enum _sim_uart_txsrc
 {
-    kSimUartTxsrcPin,   /*!< UARTx_TX Pin */
-    kSimUartTxsrcFtm1,  /*!< UARTx_TX pin modulated with FTM1 channel 0 output */
-    kSimUartTxsrcFtm2   /*!< UARTx_TX pin modulated with FTM2 channel 0 output */
+    kSimUartTxsrcPin,    /*!< UARTx_TX Pin */
+    kSimUartTxsrcFtm1,   /*!< UARTx_TX pin modulated with FTM1 channel 0 output */
+    kSimUartTxsrcFtm2,   /*!< UARTx_TX pin modulated with FTM2 channel 0 output */
 #if (defined(DOXYGEN_OUTPUT) && (DOXYGEN_OUTPUT))
-} sim_uart_txsrc_k22f12810_t;
+} sim_uart_txsrc_k22f51212_t;
 #else
 } sim_uart_txsrc_t;
 #endif
@@ -278,10 +280,10 @@ typedef enum _sim_uart_txsrc
 /*! @brief SIM FlexTimer x trigger y select */
 typedef enum _sim_ftm_trg_src
 {
-    kSimFtmTrgSrc0,            /*!< FlexTimer x trigger y select 0 */
-    kSimFtmTrgSrc1             /*!< FlexTimer x trigger y select 1 */
+    kSimFtmTrgSrc0,                 /*!< FlexTimer x trigger y select 0 */
+    kSimFtmTrgSrc1                  /*!< FlexTimer x trigger y select 1 */
 #if (defined(DOXYGEN_OUTPUT) && (DOXYGEN_OUTPUT))
-} sim_ftm_trg_src_k22f12810_t;
+} sim_ftm_trg_src_k22f51212_t;
 #else
 } sim_ftm_trg_src_t;
 #endif
@@ -289,10 +291,10 @@ typedef enum _sim_ftm_trg_src
 /*! @brief SIM FlexTimer external clock select */
 typedef enum _sim_ftm_clk_sel
 {
-    kSimFtmClkSel0,            /*!< FTM CLKIN0 pin. */
-    kSimFtmClkSel1             /*!< FTM CLKIN1 pin. */
+    kSimFtmClkSel0,                 /*!< FTM CLKIN0 pin. */
+    kSimFtmClkSel1                  /*!< FTM CLKIN1 pin. */
 #if (defined(DOXYGEN_OUTPUT) && (DOXYGEN_OUTPUT))
-} sim_ftm_clk_sel_k22f12810_t;
+} sim_ftm_clk_sel_k22f51212_t;
 #else
 } sim_ftm_clk_sel_t;
 #endif
@@ -300,12 +302,12 @@ typedef enum _sim_ftm_clk_sel
 /*! @brief SIM FlexTimer x channel y input capture source select */
 typedef enum _sim_ftm_ch_src
 {
-    kSimFtmChSrc0,  /*!< FlexTimer x channel y input capture source 0. */
-    kSimFtmChSrc1,  /*!< FlexTimer x channel y input capture source 1. */
-    kSimFtmChSrc2,  /*!< FlexTimer x channel y input capture source 2. */
-    kSimFtmChSrc3   /*!< FlexTimer x channel y input capture source 3. */
+    kSimFtmChSrc0,    /*!< FlexTimer x channel y input capture source 0. */
+    kSimFtmChSrc1,    /*!< FlexTimer x channel y input capture source 1. */
+    kSimFtmChSrc2,    /*!< FlexTimer x channel y input capture source 2. */
+    kSimFtmChSrc3,    /*!< FlexTimer x channel y input capture source 3. */
 #if (defined(DOXYGEN_OUTPUT) && (DOXYGEN_OUTPUT))
-} sim_ftm_ch_src_k22f12810_t;
+} sim_ftm_ch_src_k22f51212_t;
 #else
 } sim_ftm_ch_src_t;
 #endif
@@ -313,10 +315,10 @@ typedef enum _sim_ftm_ch_src
 /*! @brief SIM FlexTimer x channel y output source select */
 typedef enum _sim_ftm_ch_out_src
 {
-    kSimFtmChOutSrc0, /*!< FlexTimer x channel y output source selection 0. */
-    kSimFtmChOutSrc1  /*!< FlexTimer x channel y output source selection 1. */
+    kSimFtmChOutSrc0, /*!< FlexTimer x channel y output source 0. */
+    kSimFtmChOutSrc1, /*!< FlexTimer x channel y output source 1. */
 #if (defined(DOXYGEN_OUTPUT) && (DOXYGEN_OUTPUT))
-} sim_ftm_ch_out_src_k22f12810_t;
+} sim_ftm_ch_out_src_k22f51212_t;
 #else
 } sim_ftm_ch_out_src_t;
 #endif
@@ -327,7 +329,7 @@ typedef enum _sim_ftm_flt_sel
     kSimFtmFltSel0,                 /*!< FlexTimer x fault y select 0 */
     kSimFtmFltSel1                  /*!< FlexTimer x fault y select 1 */
 #if (defined(DOXYGEN_OUTPUT) && (DOXYGEN_OUTPUT))
-} sim_ftm_flt_sel_k22f12810_t;
+} sim_ftm_flt_sel_k22f51212_t;
 #else
 } sim_ftm_flt_sel_t;
 #endif
@@ -338,7 +340,7 @@ typedef enum _sim_tpm_clk_sel
     kSimTpmClkSel0,                 /*!< Timer/PWM TPM_CLKIN0 pin. */
     kSimTpmClkSel1                  /*!< Timer/PWM TPM_CLKIN1 pin. */
 #if (defined(DOXYGEN_OUTPUT) && (DOXYGEN_OUTPUT))
-} sim_tpm_clk_sel_k22f12810_t;
+} sim_tpm_clk_sel_k22f51212_t;
 #else
 } sim_tpm_clk_sel_t;
 #endif
@@ -346,10 +348,12 @@ typedef enum _sim_tpm_clk_sel
 /*! @brief SIM Timer/PWM x channel y input capture source select */
 typedef enum _sim_tpm_ch_src
 {
-    kSimTpmChSrc0,                 /*!< TPMx_CH0 signal */
-    kSimTpmChSrc1                  /*!< CMP0 output */
+    kSimTpmChSrc0,    /*!< TPM x channel y input capture source 0. */
+    kSimTpmChSrc1,    /*!< TPM x channel y input capture source 1. */
+    kSimTpmChSrc2,    /*!< TPM x channel y input capture source 2. */
+    kSimTpmChSrc3,    /*!< TPM x channel y input capture source 3. */
 #if (defined(DOXYGEN_OUTPUT) && (DOXYGEN_OUTPUT))
-} sim_tpm_ch_src_k22f12810_t;
+} sim_tpm_ch_src_k22f51212_t;
 #else
 } sim_tpm_ch_src_t;
 #endif
@@ -357,10 +361,10 @@ typedef enum _sim_tpm_ch_src
 /*! @brief SIM CMT/UART pad drive strength */
 typedef enum _sim_cmtuartpad_strengh
 {
-    kSimCmtuartSinglePad,           /*!< Single-pad drive strength for CMT IRO or UART0_TXD */
-    kSimCmtuartDualPad              /*!< Dual-pad drive strength for CMT IRO or UART0_TXD */
+    kSimCmtuartSinglePad, /*!< Single-pad drive strength for CMT IRO or UART0_TXD */
+    kSimCmtuartDualPad    /*!< Dual-pad drive strength for CMT IRO or UART0_TXD */
 #if (defined(DOXYGEN_OUTPUT) && (DOXYGEN_OUTPUT))
-} sim_cmtuartpad_strengh_k22f12810_t;
+} sim_cmtuartpad_strengh_k22f51212_t;
 #else
 } sim_cmtuartpad_strengh_t;
 #endif
@@ -371,7 +375,7 @@ typedef enum _sim_ptd7pad_strengh
     kSimPtd7padSinglePad,           /*!< Single-pad drive strength for PTD7 */
     kSimPtd7padDualPad              /*!< Dual-pad drive strength for PTD7 */
 #if (defined(DOXYGEN_OUTPUT) && (DOXYGEN_OUTPUT))
-} sim_ptd7pad_strengh_k22f12810_t;
+} sim_ptd7pad_strengh_k22f51212_t;
 #else
 } sim_ptd7pad_strengh_t;
 #endif
@@ -384,7 +388,7 @@ typedef enum _sim_flexbus_security_level
     kSimFbslLevel2, /*!< FlexBus security level 2. */
     kSimFbslLevel3, /*!< FlexBus security level 3. */
 #if (defined(DOXYGEN_OUTPUT) && (DOXYGEN_OUTPUT))
-} sim_flexbus_security_level_k22f12810_t;
+} sim_flexbus_security_level_k22f51212_t;
 #else
 } sim_flexbus_security_level_t;
 #endif
@@ -412,7 +416,10 @@ typedef enum _sim_clock_gate_name
     kSimClockGatePortE     = FSL_SIM_SCGC_BIT(5U, 13U),
     kSimClockGateFtf0      = FSL_SIM_SCGC_BIT(6U, 0U),
     kSimClockGateDmamux0   = FSL_SIM_SCGC_BIT(6U, 1U),
+    kSimClockGateFtm3      = FSL_SIM_SCGC_BIT(6U, 6U),
     kSimClockGateAdc1      = FSL_SIM_SCGC_BIT(6U, 7U),
+    kSimClockGateDac1      = FSL_SIM_SCGC_BIT(6U, 8U),
+    kSimClockGateRnga0     = FSL_SIM_SCGC_BIT(6U, 9U),
     kSimClockGateLpuart0   = FSL_SIM_SCGC_BIT(6U, 10U),
     kSimClockGateSpi0      = FSL_SIM_SCGC_BIT(6U, 12U),
     kSimClockGateSpi1      = FSL_SIM_SCGC_BIT(6U, 13U),
@@ -426,13 +433,15 @@ typedef enum _sim_clock_gate_name
     kSimClockGateAdc0      = FSL_SIM_SCGC_BIT(6U, 27U),
     kSimClockGateRtc0      = FSL_SIM_SCGC_BIT(6U, 29U),
     kSimClockGateDac0      = FSL_SIM_SCGC_BIT(6U, 31U),
+    kSimClockGateFlexbus0  = FSL_SIM_SCGC_BIT(7U, 0U),
     kSimClockGateDma0      = FSL_SIM_SCGC_BIT(7U, 1U),
 #if (defined(DOXYGEN_OUTPUT) && (DOXYGEN_OUTPUT))
-} sim_clock_gate_name_k22f12810_t;
+} sim_clock_gate_name_k22f51212_t;
 #else
 } sim_clock_gate_name_t;
 #endif
-/*! @} */
+
+/*! @}*/
 
 /*******************************************************************************
  * API
@@ -442,11 +451,10 @@ typedef enum _sim_clock_gate_name
 extern "C" {
 #endif /* __cplusplus*/
 
-/*! 
+/*!
  * @addtogroup sim_hal
  * @{
  */
-
 
 /*!
  * @brief Enable the clock for specific module.
@@ -498,9 +506,10 @@ static inline bool SIM_HAL_GetGateCmd(SIM_TypeDef * base, sim_clock_gate_name_t 
  * @param setting  The value to set.
  */
 static inline void CLOCK_HAL_SetUsbfsSrc(SIM_TypeDef * base,
-                                         uint32_t  instance,
-                                         clock_usbfs_src_t setting)
+                                       uint32_t  instance,
+                                       clock_usbfs_src_t setting)
 {
+  (void) instance;
     SIM_BWR_SOPT2_USBSRC(base, setting);
 }
 
@@ -516,6 +525,7 @@ static inline void CLOCK_HAL_SetUsbfsSrc(SIM_TypeDef * base,
 static inline clock_usbfs_src_t CLOCK_HAL_GetUsbfsSrc(SIM_TypeDef * base,
                                                       uint32_t  instance)
 {
+  (void) instance;
     return (clock_usbfs_src_t)SIM_BRD_SOPT2_USBSRC(base);
 }
 
@@ -560,6 +570,7 @@ static inline void CLOCK_HAL_SetLpuartSrc(SIM_TypeDef * base,
                                           uint32_t instance,
                                           clock_lpuart_src_t setting)
 {
+  (void) instance;
     SIM_BWR_SOPT2_LPUARTSRC(base, setting);
 }
 
@@ -575,6 +586,7 @@ static inline void CLOCK_HAL_SetLpuartSrc(SIM_TypeDef * base,
 static inline clock_lpuart_src_t CLOCK_HAL_GetLpuartSrc(SIM_TypeDef * base,
                                                         uint32_t instance)
 {
+  (void) instance;
     return (clock_lpuart_src_t)SIM_BRD_SOPT2_LPUARTSRC(base);
 }
 
@@ -613,7 +625,7 @@ static inline clock_trace_src_t CLOCK_HAL_GetTraceClkSrc(SIM_TypeDef * base)
  * @param setting  The value to set.
  */
 static inline void CLOCK_HAL_SetExternalRefClock32kSrc(SIM_TypeDef * base,
-                                          clock_er32k_src_t setting)
+                                                       clock_er32k_src_t setting)
 {
     SIM_BWR_SOPT1_OSC32KSEL(base, setting);
 }
@@ -641,7 +653,7 @@ static inline clock_er32k_src_t CLOCK_HAL_GetExternalRefClock32kSrc(SIM_TypeDef 
  * @param setting  The value to set.
  */
 static inline void CLOCK_HAL_SetPllfllSel(SIM_TypeDef * base,
-                                        clock_pllfll_sel_t setting)
+                                          clock_pllfll_sel_t setting)
 {
     SIM_BWR_SOPT2_PLLFLLSEL(base, setting);
 }
@@ -759,7 +771,7 @@ static inline void CLOCK_HAL_SetOutDiv1(SIM_TypeDef * base, uint8_t setting)
  * This function gets divide value OUTDIV1.
  *
  * @param base Base address for current SIM instance.
- * @return Current divider value.
+ * @return Current divide value.
  */
 static inline uint8_t CLOCK_HAL_GetOutDiv1(SIM_TypeDef * base)
 {
@@ -785,11 +797,37 @@ static inline void CLOCK_HAL_SetOutDiv2(SIM_TypeDef * base, uint8_t setting)
  * This function gets divide value OUTDIV2.
  *
  * @param base Base address for current SIM instance.
- * @return Current divider value.
+ * @return Current divide value.
  */
 static inline uint8_t CLOCK_HAL_GetOutDiv2(SIM_TypeDef * base)
 {
     return SIM_BRD_CLKDIV1_OUTDIV2(base);
+}
+
+/*!
+ * @brief Set OUTDIV3.
+ *
+ * This function sets divide value OUTDIV3.
+ *
+ * @param base Base address for current SIM instance.
+ * @param setting  The value to set.
+ */
+static inline void CLOCK_HAL_SetOutDiv3(SIM_TypeDef * base, uint8_t setting)
+{
+    SIM_BWR_CLKDIV1_OUTDIV3(base, setting);
+}
+
+/*!
+ * @brief Get OUTDIV3.
+ *
+ * This function gets divide value OUTDIV3.
+ *
+ * @param base Base address for current SIM instance.
+ * @return Current divide value.
+ */
+static inline uint8_t CLOCK_HAL_GetOutDiv3(SIM_TypeDef * base)
+{
+    return SIM_BRD_CLKDIV1_OUTDIV3(base);
 }
 
 /*!
@@ -811,7 +849,7 @@ static inline void CLOCK_HAL_SetOutDiv4(SIM_TypeDef * base, uint8_t setting)
  * This function gets divide value OUTDIV4.
  *
  * @param base Base address for current SIM instance.
- * @return Current divider value.
+ * @return Current divide value.
  */
 static inline uint8_t CLOCK_HAL_GetOutDiv4(SIM_TypeDef * base)
 {
@@ -834,6 +872,7 @@ void CLOCK_HAL_SetOutDiv(SIM_TypeDef * base,
                          uint8_t outdiv2,
                          uint8_t outdiv3,
                          uint8_t outdiv4);
+
 /*!
  * @brief Gets the clock out dividers setting.
  *
@@ -850,7 +889,6 @@ void CLOCK_HAL_GetOutDiv(SIM_TypeDef * base,
                          uint8_t *outdiv2,
                          uint8_t *outdiv3,
                          uint8_t *outdiv4);
-
 /*!
  * @brief Gets RAM size.
  *
@@ -863,6 +901,223 @@ void CLOCK_HAL_GetOutDiv(SIM_TypeDef * base,
 static inline uint32_t SIM_HAL_GetRamSize(SIM_TypeDef * base)
 {
     return SIM_BRD_SOPT1_RAMSIZE(base);
+}
+
+/*!
+ * @brief Sets the USB voltage regulator enabled setting.
+ *
+ * This function  controls whether the USB voltage regulator is enabled. This bit
+ * can only be written when the SOPT1CFG[URWE] bit is set.
+ *
+ * @param base     Base address for current SIM instance.
+ * @param enable   USB voltage regulator enable setting
+ *                  - true: USB voltage regulator is enabled.
+ *                  - false: USB voltage regulator is disabled.
+ */
+static inline void SIM_HAL_SetUsbVoltRegulatorCmd(SIM_TypeDef * base, bool enable)
+{
+    SIM_BWR_SOPT1_USBREGEN(base, enable ? 1 : 0);
+}
+
+/*!
+ * @brief Gets the USB voltage regulator enabled setting.
+ *
+ * This function  gets the USB voltage regulator enabled setting.
+ *
+ * @param base     Base address for current SIM instance.
+ * @return enabled True if the USB voltage regulator is enabled.
+ */
+static inline bool SIM_HAL_GetUsbVoltRegulatorCmd(SIM_TypeDef * base)
+{
+    return SIM_BRD_SOPT1_USBREGEN(base);
+}
+
+/*!
+ * @brief Sets the USB voltage regulator in a standby mode setting during Stop, VLPS, LLS, and VLLS.
+ *
+ * This function  controls whether the USB voltage regulator is placed in a standby
+ * mode during Stop, VLPS, LLS, and VLLS modes. This bit can only be written when the
+ * SOPT1CFG[USSWE] bit is set.
+ *
+ * @param base     Base address for current SIM instance.
+ * @param setting   USB voltage regulator in standby mode setting
+ *                  - 0: USB voltage regulator not in standby during Stop, VLPS, LLS and
+ *                       VLLS modes.
+ *                  - 1: USB voltage regulator in standby during Stop, VLPS, LLS and VLLS
+ *                       modes.
+ */
+static inline void SIM_HAL_SetUsbVoltRegulatorInStdbyDuringStopMode(SIM_TypeDef * base,
+                                                                    sim_usbsstby_mode_t setting)
+{
+    SIM_BWR_SOPT1_USBSSTBY(base, setting);
+}
+
+/*!
+ * @brief Gets the USB voltage regulator in a standby mode setting.
+ *
+ * This function  gets the USB voltage regulator in a standby mode setting.
+ *
+ * @param base     Base address for current SIM instance.
+ * @return setting  USB voltage regulator in a standby mode setting
+ */
+static inline sim_usbsstby_mode_t SIM_HAL_GetUsbVoltRegulatorInStdbyDuringStopMode(SIM_TypeDef * base)
+{
+    return (sim_usbsstby_mode_t)SIM_BRD_SOPT1_USBSSTBY(base);
+}
+
+/*!
+ * @brief Sets the USB voltage regulator in a standby mode during the VLPR or the VLPW.
+ *
+ * This function  controls whether the USB voltage regulator is placed in a standby
+ * mode during the VLPR and the VLPW modes. This bit can only be written when the
+ * SOPT1CFG[UVSWE] bit is set.
+ *
+ * @param base     Base address for current SIM instance.
+ * @param setting   USB voltage regulator in standby mode setting
+ *                  - 0: USB voltage regulator not in standby during VLPR and VLPW modes.
+ *                  - 1: USB voltage regulator in standby during VLPR and VLPW modes.
+ */
+static inline void SIM_HAL_SetUsbVoltRegulatorInStdbyDuringVlprwMode(SIM_TypeDef * base,
+                                                                     sim_usbvstby_mode_t setting)
+{
+    SIM_BWR_SOPT1_USBVSTBY(base, setting);
+}
+
+/*!
+ * @brief Gets the USB voltage regulator in a standby mode during the VLPR or the VLPW.
+ *
+ * This function  gets the USB voltage regulator in a standby mode during the VLPR or the VLPW.
+ *
+ * @param base     Base address for current SIM instance.
+ * @return setting  USB voltage regulator in a standby mode during the VLPR or the VLPW
+ */
+static inline sim_usbvstby_mode_t SIM_HAL_GetUsbVoltRegulatorInStdbyDuringVlprwMode(SIM_TypeDef * base)
+{
+    return (sim_usbvstby_mode_t)SIM_BRD_SOPT1_USBVSTBY(base);
+}
+
+/*!
+ * @brief Sets the USB voltage regulator stop standby write enable setting.
+ *
+ * This function  controls whether the USB voltage regulator stop  standby write
+ * feature is enabled. Writing one to this bit allows the SOPT1[USBSSTBY] bit to be written. This
+ * register bit clears after a write to SOPT1[USBSSTBY].
+ *
+ * @param base     Base address for current SIM instance.
+ * @param enable  USB voltage regulator stop standby write enable setting
+ *                  - true: SOPT1[USBSSTBY] can be written.
+ *                  - false: SOPT1[USBSSTBY] cannot be written.
+ */
+static inline void SIM_HAL_SetUsbVoltRegulatorInStdbyDuringStopCmd(SIM_TypeDef * base, bool enable)
+{
+    SIM_BWR_SOPT1CFG_USSWE(base, enable ? 1 : 0);
+}
+
+/*!
+ * @brief Gets the USB voltage regulator stop standby write enable setting.
+ *
+ * This function  gets the USB voltage regulator stop standby write enable setting.
+ *
+ * @param base     Base address for current SIM instance.
+ * @return enabled True if the USB voltage regulator stop standby write is enabled.
+ */
+static inline bool SIM_HAL_GetUsbVoltRegulatorInStdbyDuringStopCmd(SIM_TypeDef * base)
+{
+    return SIM_BRD_SOPT1CFG_USSWE(base);
+}
+
+/*!
+ * @brief Sets the USB voltage regulator VLP standby write enable setting.
+ *
+ * This function  controls whether USB voltage regulator VLP standby write
+ * feature is enabled. Writing one to this bit allows the SOPT1[USBVSTBY] bit to be written. This
+ * register bit clears after a write to SOPT1[USBVSTBY].
+ *
+ * @param base     Base address for current SIM instance.
+ * @param enable   USB voltage regulator VLP standby write enable setting
+ *                  - true: SOPT1[USBSSTBY] can be written.
+ *                  - false: SOPT1[USBSSTBY] cannot be written.
+ */
+static inline void SIM_HAL_SetUsbVoltRegulatorInStdbyDuringVlprwCmd(SIM_TypeDef * base, bool enable)
+{
+    SIM_BWR_SOPT1CFG_UVSWE(base, enable ? 1 : 0);
+}
+
+/*!
+ * @brief Gets the USB voltage regulator VLP standby write enable setting.
+ *
+ * This function  gets the USB voltage regulator VLP standby write enable setting.
+ *
+ * @param base     Base address for current SIM instance.
+ * @return enabled True if the USB voltage regulator VLP standby write is enabled.
+ */
+static inline bool SIM_HAL_GetUsbVoltRegulatorInStdbyDuringVlprwCmd(SIM_TypeDef * base)
+{
+    return SIM_BRD_SOPT1CFG_UVSWE(base);
+}
+
+/*!
+ * @brief Sets the USB voltage regulator enable write enable setting.
+ *
+ * This function  controls whether the USB voltage regulator write enable
+ * feature is enabled. Writing one to this bit allows the SOPT1[USBREGEN] bit to be written.
+ * This register bit clears after a write to SOPT1[USBREGEN].
+ *
+ * @param base     Base address for current SIM instance.
+ * @param enable   USB voltage regulator enable write enable setting
+ *                  - true: SOPT1[USBSSTBY] can be written.
+ *                  - false: SOPT1[USBSSTBY] cannot be written.
+ */
+static inline void SIM_HAL_SetUsbVoltRegulatorWriteCmd(SIM_TypeDef * base, bool enable)
+{
+    SIM_BWR_SOPT1CFG_URWE(base, enable ? 1 : 0);
+}
+
+/*!
+ * @brief Gets the USB voltage regulator enable write enable setting.
+ *
+ * This function  gets the USB voltage regulator enable write enable setting.
+ *
+ * @param base     Base address for current SIM instance.
+ * @return enabled True if USB voltage regulator enable write is enabled.
+ */
+static inline bool SIM_HAL_GetUsbVoltRegulatorWriteCmd(SIM_TypeDef * base)
+{
+    return SIM_BRD_SOPT1CFG_URWE(base);
+}
+
+/*!
+ * @brief Sets the FlexBus security level setting.
+ *
+ * This function  sets the FlexBus security level setting. If the security is enabled,
+ * this field affects which CPU operations can access the off-chip via the FlexBus
+ * and DDR controller interfaces. This field has no effect if the security is not enabled.
+ *
+ * @param base     Base address for current SIM instance.
+ * @param setting   FlexBus security level setting
+ *                  - 00: All off-chip accesses (op code and data) via the FlexBus and
+ *                        DDR controller are disallowed.
+ *                  - 10: Off-chip op code accesses are disallowed. Data accesses are
+ *                        allowed.
+ *                  - 11: Off-chip op code accesses and data accesses are allowed.
+ */
+static inline void SIM_HAL_SetFlexbusSecurityLevelMode(SIM_TypeDef * base,
+                                                       sim_flexbus_security_level_t setting)
+{
+    SIM_BWR_SOPT2_FBSL(base, setting);
+}
+
+/*!
+ * @brief Gets the FlexBus security level setting.
+ *
+ * This function  gets the FlexBus security level setting.
+ *
+ * @param base     Base address for current SIM instance.
+ * @return setting FlexBus security level setting
+ */
+static inline sim_flexbus_security_level_t SIM_HAL_GetFlexbusSecurityLevelMode(SIM_TypeDef * base)
+{
+    return (sim_flexbus_security_level_t)SIM_BRD_SOPT2_FBSL(base);
 }
 
 /*!
@@ -1021,6 +1276,7 @@ static inline void SIM_HAL_SetLpuartRxSrcMode(SIM_TypeDef * base,
                                               uint32_t instance,
                                               sim_lpuart_rxsrc_t select)
 {
+  (void) instance;
     SIM_BWR_SOPT5_LPUART0RXSRC(base, select);
 }
 
@@ -1036,6 +1292,7 @@ static inline void SIM_HAL_SetLpuartRxSrcMode(SIM_TypeDef * base,
 static inline sim_lpuart_rxsrc_t SIM_HAL_GetLpuartRxSrcMode(SIM_TypeDef * base,
                                                             uint32_t instance)
 {
+  (void) instance;
     return (sim_lpuart_rxsrc_t)SIM_BRD_SOPT5_LPUART0RXSRC(base);
 }
 
@@ -1181,7 +1438,7 @@ void SIM_HAL_SetFtmSyncCmd(SIM_TypeDef * base, uint32_t instance, bool sync);
  */
 static inline bool SIM_HAL_GetFtmSyncCmd(SIM_TypeDef * base, uint32_t instance)
 {
-    assert (instance < FTM_INSTANCE_COUNT);
+  osalDbgAssert((instance < FTM_INSTANCE_COUNT), "instance greater than FTM_INSTANCE_COUNT");
     return (bool)(SIM_RD_SOPT8(base) & (1U<<instance));
 }
 
@@ -1402,15 +1659,14 @@ static inline uint32_t SIM_HAL_GetFlashMaxAddrBlock1(SIM_TypeDef * base)
     return SIM_BRD_FCFG2_MAXADDR1(base);
 }
 
-
-
-/*! @}*/
 #if defined(__cplusplus)
 }
 #endif /* __cplusplus*/
 
 
-#endif /* __FSL_SIM_HAL_K22F12810_H__ */
+/*! @}*/
+
+#endif /* __FSL_SIM_HAL_K22F51212_H__ */
 /*******************************************************************************
  * EOF
  ******************************************************************************/

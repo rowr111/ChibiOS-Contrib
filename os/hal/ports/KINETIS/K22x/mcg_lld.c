@@ -36,7 +36,8 @@
 
 #include "mcg_lld.h"
 
-uint32_t SystemCoreClock = DEFAULT_SYSTEM_CLOCK;
+//uint32_t SystemCoreClock = DEFAULT_SYSTEM_CLOCK;
+extern uint32_t SystemCoreClock;
 
 /*
  * README:
@@ -148,9 +149,9 @@ clock_manager_error_code_t CLOCK_SYS_GetFreq(clock_names_t clockName,
         case kMcgFllClock:
             *frequency = CLOCK_HAL_GetFllClk(MCG);
             break;
-        case kMcgPll0Clock:
-            *frequency = CLOCK_HAL_GetPll0Clk(MCG);
-            break;
+	    //        case kMcgPll0Clock:  // doesn't exist on this system...
+	    //            *frequency = CLOCK_HAL_GetPll0Clk(MCG);
+	    //            break;
         case kMcgOutClock:
             *frequency = CLOCK_HAL_GetOutClk(MCG);
             break;
@@ -254,9 +255,9 @@ uint32_t CLOCK_SYS_GetPllFllClockFreq(void)
         case kClockPllFllSelFll:
             freq = CLOCK_HAL_GetFllClk(MCG);
             break;
-        case kClockPllFllSelPll:
-            freq = CLOCK_HAL_GetPll0Clk(MCG);
-            break;
+	    //        case kClockPllFllSelPll:
+	    //            freq = CLOCK_HAL_GetPll0Clk(MCG);
+	    //            break;
         case kClockPllFllSelIrc48M:
             freq = CPU_INTERNAL_IRC_48M;
             break;
