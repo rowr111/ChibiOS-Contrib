@@ -211,7 +211,7 @@ uint32_t CLOCK_SYS_GetBusClockFreq(void)
 {
     return CLOCK_HAL_GetOutClk(MCG) / (CLOCK_HAL_GetOutDiv2(SIM) + 1);
 }
-
+#if 0
 /*FUNCTION**********************************************************************
  *
  * Function Name : CLOCK_SYS_GetFlexbusFreq
@@ -223,7 +223,7 @@ uint32_t CLOCK_SYS_GetFlexbusFreq(void)
 {
     return CLOCK_HAL_GetOutClk(MCG) / (CLOCK_HAL_GetOutDiv3(SIM) + 1);
 }
-
+#endif
 /*FUNCTION**********************************************************************
  *
  * Function Name : CLOCK_SYS_GetFlashClockFreq

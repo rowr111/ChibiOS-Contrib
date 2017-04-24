@@ -812,6 +812,7 @@ static inline uint8_t CLOCK_HAL_GetOutDiv2(SIM_TypeDef * base)
  * @param base Base address for current SIM instance.
  * @param setting  The value to set.
  */
+#if 0
 static inline void CLOCK_HAL_SetOutDiv3(SIM_TypeDef * base, uint8_t setting)
 {
     SIM_BWR_CLKDIV1_OUTDIV3(base, setting);
@@ -829,6 +830,7 @@ static inline uint8_t CLOCK_HAL_GetOutDiv3(SIM_TypeDef * base)
 {
     return SIM_BRD_CLKDIV1_OUTDIV3(base);
 }
+#endif
 
 /*!
  * @brief Set OUTDIV4.
@@ -903,6 +905,7 @@ static inline uint32_t SIM_HAL_GetRamSize(SIM_TypeDef * base)
     return SIM_BRD_SOPT1_RAMSIZE(base);
 }
 
+#if 0
 /*!
  * @brief Sets the USB voltage regulator enabled setting.
  *
@@ -1085,7 +1088,8 @@ static inline bool SIM_HAL_GetUsbVoltRegulatorWriteCmd(SIM_TypeDef * base)
 {
     return SIM_BRD_SOPT1CFG_URWE(base);
 }
-
+#endif
+  
 /*!
  * @brief Sets the FlexBus security level setting.
  *
@@ -1101,12 +1105,13 @@ static inline bool SIM_HAL_GetUsbVoltRegulatorWriteCmd(SIM_TypeDef * base)
  *                        allowed.
  *                  - 11: Off-chip op code accesses and data accesses are allowed.
  */
+#if 0
 static inline void SIM_HAL_SetFlexbusSecurityLevelMode(SIM_TypeDef * base,
                                                        sim_flexbus_security_level_t setting)
 {
     SIM_BWR_SOPT2_FBSL(base, setting);
 }
-
+#endif
 /*!
  * @brief Gets the FlexBus security level setting.
  *
@@ -1115,11 +1120,12 @@ static inline void SIM_HAL_SetFlexbusSecurityLevelMode(SIM_TypeDef * base,
  * @param base     Base address for current SIM instance.
  * @return setting FlexBus security level setting
  */
+#if 0
 static inline sim_flexbus_security_level_t SIM_HAL_GetFlexbusSecurityLevelMode(SIM_TypeDef * base)
 {
     return (sim_flexbus_security_level_t)SIM_BRD_SOPT2_FBSL(base);
 }
-
+#endif
 /*!
  * @brief Sets the ADCx alternate trigger enable setting.
  *

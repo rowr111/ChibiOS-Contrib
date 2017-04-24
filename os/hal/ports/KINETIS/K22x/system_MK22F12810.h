@@ -269,7 +269,7 @@ extern "C" {
 /* SIM_SOPT2: LPUARTSRC=0,USBSRC=0,PLLFLLSEL=3,TRACECLKSEL=0,CLKOUTSEL=0,RTCCLKOUTSEL=0 */
   #define SYSTEM_SIM_SOPT2_VALUE       0x00030000U         /* SIM_SOPT2 */
 #elif (CLOCK_SETUP == 4)
-  #define DEFAULT_SYSTEM_CLOCK         95977472u           /* Default System clock value */
+  //  #define DEFAULT_SYSTEM_CLOCK         95977472u           /* Default System clock value */ // handled in mcuconf.h
   #define MCG_MODE                     MCG_MODE_FEE /* Clock generator mode */
   /* MCG_C1: CLKS=0,FRDIV=0,IREFS=0,IRCLKEN=1,IREFSTEN=0 */
   #define SYSTEM_MCG_C1_VALUE          0x02U               /* MCG_C1 */

@@ -125,6 +125,7 @@ static inline uint8_t CLOCK_SYS_GetOutDiv2(void)
     return CLOCK_HAL_GetOutDiv2(SIM);
 }
 
+#if 0
 /*!
  * @brief Sets the clock out divider3 setting(OUTDIV3).
  *
@@ -148,7 +149,8 @@ static inline uint8_t CLOCK_SYS_GetOutDiv3(void)
 {
     return CLOCK_HAL_GetOutDiv3(SIM);
 }
-
+#endif
+  
 /*!
  * @brief Sets the clock out divider4 setting(OUTDIV4).
  *
