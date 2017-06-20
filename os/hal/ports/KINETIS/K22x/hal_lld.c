@@ -128,7 +128,7 @@ void k22x_clock_init(void) {
 #else
   WDOG->STCTRLH = 0x101;
   WDOG->TOVALH = 0; // 1 kHz clock, prescaled by 4 = 250 Hz clock
-  WDOG->TOVALL = 1000; // 4 seconds
+  WDOG->TOVALL = 5000; // 20 seconds
 #endif
 
 #ifdef CLOCK_SETUP
