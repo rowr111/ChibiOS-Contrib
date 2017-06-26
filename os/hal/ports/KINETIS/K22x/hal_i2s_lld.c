@@ -23,8 +23,7 @@
  */
 #include "hal.h"
 #include <string.h>
-
-uint32_t rx_int_count = 0;
+#include "mic.h"
 
 #if HAL_USE_I2S || defined(__DOXYGEN__)
 
@@ -407,6 +406,11 @@ static void SAI_HAL_ReceiveDataBlocking(I2S_TypeDef * base, uint32_t rx_channel,
 static void SAI_HAL_SendDataBlocking(I2S_TypeDef * base, uint32_t tx_channel, 
     uint8_t * txBuff, uint32_t size);
 
+uint32_t rx_dma_lasterr = 0;
+uint32_t rx_i2s_lasterr = 0;
+uint32_t rx_int_count = 0;
+uint32_t rx_err_count = 0;
+
 static void serve_rx_interrupt(I2SDriver *i2sp) {
   I2S_TypeDef * reg_base = i2sp->I2S;
   uint8_t i = 0;
@@ -415,12 +419,17 @@ static void serve_rx_interrupt(I2SDriver *i2sp) {
 
   /* Judge if FIFO error */
   if(SAI_HAL_RxGetStateFlag(reg_base, kSaiStateFlagFIFOError)) {
+    // rx_dma_lasterr = DMA->ES;
+    rx_i2s_lasterr = I2S0->RCSR;
+    rx_err_count++;
+    
     // well, if an error I guess we do nothing but clear the flag for now
     SAI_HAL_RxClearStateFlag(reg_base, kSaiStateFlagFIFOError);    
   }
   /* Interrupt used to transfer data. */
   if((SAI_HAL_RxGetStateFlag(reg_base, kSaiStateFlagFIFORequest)) &&
      (!i2sp->config->sai_rx_state.use_dma)) {
+    rx_int_count++;
     uint8_t space = i2sp->config->sai_rx_state.watermark;
     /*Judge if the data need to transmit is less than space */
     if(space > (len - i2sp->config->sai_rx_state.count)) {
@@ -1497,6 +1506,7 @@ void config_dma(I2SDriver *i2sp) {
   DMA->CERQ = KINETIS_I2S_DMA_CHANNEL; // disable requests on channel 1 while configuring
   DMA->CR |= DMA_CR_EMLM_MASK; // enable minor looping -- I /think/ this is the right thing to do
   DMA->CR |= DMA_CR_ERCA_MASK; // set to round-robin priority -- necessary to prevent starvation from MMC SD subsystem
+  //  DMA->CR |= 0x10; // halt on error, for debug only
   // the round-robin should probably be requested in the SPI subystem since that's the hog but
   // we turn it on here because when SPI steals the bus for a long write, the DMA overflows and crashes the system
 
@@ -1505,7 +1515,7 @@ void config_dma(I2SDriver *i2sp) {
   tcd->SOFF = 0; // will be 0 for reading from the FIFO
   
   tcd->SLAST = 0;
-  tcd->DLASTSGA = 0;
+  tcd->DLASTSGA = -NUM_RX_SAMPLES * sizeof(uint32_t);
   
   tcd->ATTR = DMA_ATTR_SSIZE(2) | DMA_ATTR_DSIZE(2); // 32-bit source and dest size
   //tcd->ATTR = DMA_ATTR_SSIZE(0) | DMA_ATTR_DSIZE(0); // 32-bit source and dest size
@@ -1516,8 +1526,8 @@ void config_dma(I2SDriver *i2sp) {
   tcd->DADDR = i2sp->config->rx_buffer;
   tcd->DOFF = 4; 
 
-  tcd->CITER_ELINKNO = 512/i2sp->config->sai_rx_userconfig.watermark; // major loop count
-  tcd->BITER_ELINKNO = 512/i2sp->config->sai_rx_userconfig.watermark; // these two have to match
+  tcd->CITER_ELINKNO = NUM_RX_SAMPLES/i2sp->config->sai_rx_userconfig.watermark; // major loop count
+  tcd->BITER_ELINKNO = NUM_RX_SAMPLES/i2sp->config->sai_rx_userconfig.watermark; // these two have to match
   
   tcd->CSR = DMA_CSR_INTMAJOR_MASK | DMA_CSR_DREQ_MASK | DMA_CSR_BWC(2); // don't set DREQ, which means we can overflow if we don't drain immediately
 

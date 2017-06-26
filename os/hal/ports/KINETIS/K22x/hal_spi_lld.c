@@ -136,6 +136,8 @@ static void spi_start_xfer(SPIDriver *spip, bool polling)
     DMA->TCD[KINETIS_SPI0_RX_DMA_CHANNEL].BITER_ELINKNO = spip->count;
     DMA->TCD[KINETIS_SPI0_RX_DMA_CHANNEL].CITER_ELINKNO = spip->count;
 
+    DMA->TCD[KINETIS_SPI0_RX_DMA_CHANNEL].CSR |= 0x8000; // turn on bandwidth control
+    
     /* Enable Request Register (ERQ) for RX by writing 0 to SERQ */
     DMA->SERQ = KINETIS_SPI0_RX_DMA_CHANNEL;
 
@@ -149,6 +151,8 @@ static void spi_start_xfer(SPIDriver *spip, bool polling)
     }
     DMA->TCD[KINETIS_SPI0_TX_DMA_CHANNEL].BITER_ELINKNO = spip->count;
     DMA->TCD[KINETIS_SPI0_TX_DMA_CHANNEL].CITER_ELINKNO = spip->count;
+
+    DMA->TCD[KINETIS_SPI0_TX_DMA_CHANNEL].CSR |= 0x8000; // turn on bandwidth control
 
     /* Enable Request Register (ERQ) for TX by writing 1 to SERQ */
     DMA->SERQ = KINETIS_SPI0_TX_DMA_CHANNEL;
