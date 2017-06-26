@@ -1486,6 +1486,49 @@ void i2s_lld_stop(I2SDriver *i2sp) {
   }
 }
 
+void config_dma(I2SDriver *i2sp) {
+  volatile DMA_TCD_TypeDef *tcd;
+
+  SIM->SCGC6 |= SIM_SCGC6_DMAMUX;
+  SIM->SCGC7 |= SIM_SCGC7_DMA;
+  
+  tcd = &(DMA->TCD[KINETIS_I2S_DMA_CHANNEL]);
+
+  DMA->CERQ = KINETIS_I2S_DMA_CHANNEL; // disable requests on channel 1 while configuring
+  DMA->CR |= DMA_CR_EMLM_MASK; // enable minor looping -- I /think/ this is the right thing to do
+  DMA->CR |= DMA_CR_ERCA_MASK; // set to round-robin priority -- necessary to prevent starvation from MMC SD subsystem
+  // the round-robin should probably be requested in the SPI subystem since that's the hog but
+  // we turn it on here because when SPI steals the bus for a long write, the DMA overflows and crashes the system
+
+  // EDMA_DRV_ConfigLoopTransfer call
+  tcd->SADDR = &(I2S0->RDR[0]);
+  tcd->SOFF = 0; // will be 0 for reading from the FIFO
+  
+  tcd->SLAST = 0;
+  tcd->DLASTSGA = 0;
+  
+  tcd->ATTR = DMA_ATTR_SSIZE(2) | DMA_ATTR_DSIZE(2); // 32-bit source and dest size
+  //tcd->ATTR = DMA_ATTR_SSIZE(0) | DMA_ATTR_DSIZE(0); // 32-bit source and dest size
+
+  tcd->NBYTES_MLNO = i2sp->config->sai_rx_userconfig.watermark * sizeof(uint32_t);  // minor loop count
+  //  tcd->NBYTES_MLOFFYES = 0xC0004010;
+  
+  tcd->DADDR = i2sp->config->rx_buffer;
+  tcd->DOFF = 4; 
+
+  tcd->CITER_ELINKNO = 512/i2sp->config->sai_rx_userconfig.watermark; // major loop count
+  tcd->BITER_ELINKNO = 512/i2sp->config->sai_rx_userconfig.watermark; // these two have to match
+  
+  tcd->CSR = DMA_CSR_INTMAJOR_MASK | DMA_CSR_DREQ_MASK | DMA_CSR_BWC(2); // don't set DREQ, which means we can overflow if we don't drain immediately
+
+  // need to make this infer based on KINETIS_I2S_DMA_CHANNEL
+  nvicEnableVector(DMA2_IRQn, 5); // enable the interrupt before firing; the priority needs to be less than I2C
+
+  DMAMUX->CHCFG[KINETIS_I2S_DMA_CHANNEL] = (DMAMUX_CHCFG_ENBL_MASK | DMAMUX_CHCFG_SOURCE(12)); // i2s is channel 12 on DMAmux
+  
+  DMA->SERQ = KINETIS_I2S_DMA_CHANNEL; // enable requests on channel 1
+}
+
 /**
  * @brief   Starts a I2S data receive only.
  *
@@ -1501,8 +1544,12 @@ void i2s_lld_start_rx(I2SDriver *i2sp) {
   // hardware int handler already setup in driver
   // enable the interrupts to drain the FIFO
   SAI_HAL_RxSetIntCmd(reg_base, kSaiIntrequestAll, false);  // clear all interrupts except the one we want
-  SAI_HAL_RxSetIntCmd(reg_base, kSaiIntrequestFIFORequest, true); // fires when watermark hit
-  SAI_HAL_RxSetIntCmd(reg_base, kSaiIntrequestFIFOError, true); // ignore errors for now
+  SAI_HAL_RxSetIntCmd(reg_base, kSaiIntrequestFIFORequest, false); // fires when watermark hit
+  SAI_HAL_RxSetIntCmd(reg_base, kSaiIntrequestFIFOError, true); // use interrupts to handle errors
+
+  config_dma(i2sp);
+  SAI_HAL_RxSetDmaCmd(reg_base, kSaiDmaReqFIFORequest, true);
+  //  I2SD1->RCSR |= I2S_TCSR_FRDE_MASK; // request DMA enable on I2S
 
   // then start the system running and I think we're done!
   if(i2sp->config->sai_rx_state.sync_mode == kSaiModeSync) {

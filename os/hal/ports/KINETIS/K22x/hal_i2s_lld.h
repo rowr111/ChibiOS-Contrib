@@ -228,8 +228,8 @@ typedef struct sai_state
   sai_master_slave_t master_slave;
   sai_protocol_t protocol;
 #if defined FSL_FEATURE_EDMA_MODULE_CHANNEL
-  //    edma_chn_state_t edma_chn;
-  //    edma_software_tcd_t tcd[2];
+  //  edma_chn_state_t edma_chn;
+  DMA_TCD_TypeDef tcd;
 #else
   uint8_t chn;
 #endif

@@ -183,7 +183,7 @@
 /****************************************************************/
 /*                 Peripheral declaration                       */
 /****************************************************************/
-#define DMA                     ((DMA_TypeDef *)     DMA_BASE)
+#define DMA                     ((volatile DMA_TypeDef *)     DMA_BASE)
 #if 0
 #define FTFL                    ((FTFL_TypeDef *)    FTFL_BASE)
 #define DMAMUX                  ((DMAMUX_TypeDef *)  DMAMUX_BASE)
