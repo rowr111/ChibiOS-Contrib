@@ -1504,8 +1504,11 @@ void config_dma(I2SDriver *i2sp) {
   tcd = &(DMA->TCD[KINETIS_I2S_DMA_CHANNEL]);
 
   DMA->CERQ = KINETIS_I2S_DMA_CHANNEL; // disable requests on channel 1 while configuring
-  DMA->CR |= DMA_CR_EMLM_MASK; // enable minor looping -- I /think/ this is the right thing to do
+  // DMA->CR |= DMA_CR_EMLM_MASK; // enable minor looping -- I /think/ this is the right thing to do
   DMA->CR |= DMA_CR_ERCA_MASK; // set to round-robin priority -- necessary to prevent starvation from MMC SD subsystem
+  //DMA->DCHPRI2 = 0x81;
+  //DMA->DCHPRI1 = 0x82;
+  
   //  DMA->CR |= 0x10; // halt on error, for debug only
   // the round-robin should probably be requested in the SPI subystem since that's the hog but
   // we turn it on here because when SPI steals the bus for a long write, the DMA overflows and crashes the system
@@ -1515,9 +1518,12 @@ void config_dma(I2SDriver *i2sp) {
   tcd->SOFF = 0; // will be 0 for reading from the FIFO
   
   tcd->SLAST = 0;
-  tcd->DLASTSGA = -NUM_RX_SAMPLES * sizeof(uint32_t);
+
+  tcd->DLASTSGA = -NUM_RX_SAMPLES * sizeof(uint32_t); // I think this is not useful??
+  //tcd->DLASTSGA = 0;
   
-  tcd->ATTR = DMA_ATTR_SSIZE(2) | DMA_ATTR_DSIZE(2); // 32-bit source and dest size
+  tcd->ATTR = DMA_ATTR_SSIZE(2) | DMA_ATTR_DSIZE(2) | DMA_ATTR_DMOD(10); // 32-bit source and dest size
+  //tcd->ATTR = DMA_ATTR_SSIZE(2) | DMA_ATTR_DSIZE(2);
   //tcd->ATTR = DMA_ATTR_SSIZE(0) | DMA_ATTR_DSIZE(0); // 32-bit source and dest size
 
   tcd->NBYTES_MLNO = i2sp->config->sai_rx_userconfig.watermark * sizeof(uint32_t);  // minor loop count
@@ -1529,10 +1535,11 @@ void config_dma(I2SDriver *i2sp) {
   tcd->CITER_ELINKNO = NUM_RX_SAMPLES/i2sp->config->sai_rx_userconfig.watermark; // major loop count
   tcd->BITER_ELINKNO = NUM_RX_SAMPLES/i2sp->config->sai_rx_userconfig.watermark; // these two have to match
   
-  tcd->CSR = DMA_CSR_INTMAJOR_MASK | DMA_CSR_DREQ_MASK | DMA_CSR_BWC(2); // don't set DREQ, which means we can overflow if we don't drain immediately
+  //  tcd->CSR = DMA_CSR_INTMAJOR_MASK | DMA_CSR_DREQ_MASK | DMA_CSR_BWC(2); 
+  tcd->CSR = DMA_CSR_INTMAJOR_MASK | DMA_CSR_DREQ_MASK;
 
   // need to make this infer based on KINETIS_I2S_DMA_CHANNEL
-  nvicEnableVector(DMA2_IRQn, 5); // enable the interrupt before firing; the priority needs to be less than I2C
+  nvicEnableVector(DMA2_IRQn, 6); // enable the interrupt before firing; the priority needs to be less than I2C
 
   DMAMUX->CHCFG[KINETIS_I2S_DMA_CHANNEL] = (DMAMUX_CHCFG_ENBL_MASK | DMAMUX_CHCFG_SOURCE(12)); // i2s is channel 12 on DMAmux
   

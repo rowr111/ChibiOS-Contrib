@@ -283,6 +283,12 @@ void spi_lld_init(void) {
  */
 void spi_lld_start(SPIDriver *spip) {
 
+  // setup drive strengths
+  PORTD_PCR0 = 0x203; // pull up enabled, fast slew  (CS0)
+  PORTD_PCR1 = 0x203; // pull up enabled, fast slew (clk)
+  PORTD_PCR2 = 0x200; // fast slew (mosi)
+  PORTD_PCR3 = 0x200; // fast slew (miso)
+
   /* If in stopped state then enables the SPI and DMA clocks.*/
   if (spip->state == SPI_STOP) {
 
@@ -428,6 +434,8 @@ void spi_lld_stop(SPIDriver *spip) {
   /* If in ready state then disables the SPI clock.*/
   if (spip->state == SPI_READY) {
 
+#if 0 // this code breaks error handling and recovery, because it turns off DMA and prevents other stuff from working
+    
     nvicDisableVector(DMA0_IRQn);
     nvicDisableVector(SPI1_IRQn);
 
@@ -453,7 +461,11 @@ void spi_lld_stop(SPIDriver *spip) {
     /* Disable the clock for SPI1 */
     SIM->SCGC6 &= ~SIM_SCGC6_SPI1;
 #endif
+    
+#endif
   }
+  
+  
 }
 
 /**
