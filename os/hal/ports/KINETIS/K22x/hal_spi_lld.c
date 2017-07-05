@@ -283,12 +283,6 @@ void spi_lld_init(void) {
  */
 void spi_lld_start(SPIDriver *spip) {
 
-  // setup drive strengths
-  PORTD_PCR0 = 0x203; // pull up enabled, fast slew  (CS0)
-  PORTD_PCR1 = 0x203; // pull up enabled, fast slew (clk)
-  PORTD_PCR2 = 0x200; // fast slew (mosi)
-  PORTD_PCR3 = 0x200; // fast slew (miso)
-
   /* If in stopped state then enables the SPI and DMA clocks.*/
   if (spip->state == SPI_STOP) {
 
@@ -306,6 +300,7 @@ void spi_lld_start(SPIDriver *spip) {
         spip->spi->CTAR[0] = KINETIS_SPI_TAR0_DEFAULT;
       }
     }
+    
 #endif
 
 #if KINETIS_SPI_USE_SPI1
@@ -442,16 +437,6 @@ void spi_lld_stop(SPIDriver *spip) {
     SIM->SCGC7 &= ~SIM_SCGC7_DMA;
     SIM->SCGC6 &= ~SIM_SCGC6_DMAMUX;
 
-#if KINETIS_SPI_USE_SPI0
-    if (&SPID1 == spip) {
-      /* SPI halt.*/
-      spip->spi->MCR |= SPIx_MCR_HALT;
-    }
-
-    /* Disable the clock for SPI0 */
-    SIM->SCGC6 &= ~SIM_SCGC6_SPI0;
-#endif
-
 #if KINETIS_SPI_USE_SPI1
     if (&SPID2 == spip) {
       /* SPI halt.*/
@@ -463,6 +448,18 @@ void spi_lld_stop(SPIDriver *spip) {
 #endif
     
 #endif
+
+#if KINETIS_SPI_USE_SPI0
+    if (&SPID1 == spip) {
+      /* SPI halt.*/
+      spip->spi->MCR |= SPIx_MCR_HALT; // this allows configs to be safely modified
+    }
+    spip->state = SPI_STOP;
+    
+    /* Disable the clock for SPI0 */
+    // SIM->SCGC6 &= ~SIM_SCGC6_SPI0;
+#endif
+    
   }
   
   

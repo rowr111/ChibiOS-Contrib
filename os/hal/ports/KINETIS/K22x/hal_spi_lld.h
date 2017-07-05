@@ -207,6 +207,16 @@ struct SPIDriver {
     SPIx_CTARn_ASC(0) | \
     SPIx_CTARn_DT(0)
 
+// note CPOL, CPHA deleted
+#define KINETIS_SPI_TAR_SYSCLK_DIV_SD(n)\
+    SPIx_CTARn_FMSZ((n) - 1) | \
+    SPIx_CTARn_DBR | \
+    SPIx_CTARn_PBR(0) | \
+    SPIx_CTARn_BR(1) | \
+    SPIx_CTARn_CSSCK(0) | \
+    SPIx_CTARn_ASC(0) | \
+    SPIx_CTARn_DT(0)
+
 /* TAR settings for n bits at SYSCLK / 4096 for debugging */
 #define KINETIS_SPI_TAR_SYSCLK_DIV_4096(n) \
     SPIx_CTARn_FMSZ(((n) - 1)) | \
@@ -219,6 +229,7 @@ struct SPIDriver {
     SPIx_CTARn_DT(0xB)
 
 #define KINETIS_SPI_TAR_8BIT_FAST   KINETIS_SPI_TAR_SYSCLK_DIV_2(8)
+#define KINETIS_SPI_TAR_8BIT_SD     KINETIS_SPI_TAR_SYSCLK_DIV_SD(8)
 #define KINETIS_SPI_TAR_8BIT_SLOW   KINETIS_SPI_TAR_SYSCLK_DIV_4096(8)
 
 #define KINETIS_SPI_TAR0_DEFAULT    KINETIS_SPI_TAR_SYSCLK_DIV_2(8)
