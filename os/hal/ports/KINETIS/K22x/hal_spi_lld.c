@@ -454,8 +454,6 @@ void spi_lld_ignore(SPIDriver *spip, size_t n) {
 // changed PBR(1) -> /3, so speed is now 50% slower...
 #define KINETIS_SPI_TAR_BUSCLK_XZ(n)		\
     SPIx_CTARn_FMSZ((n) - 1) | \
-    SPIx_CTARn_CPOL | \
-    SPIx_CTARn_CPHA | \
     SPIx_CTARn_DBR | \
     SPIx_CTARn_PBR(1) | \
     SPIx_CTARn_BR(2) |	  \
@@ -463,7 +461,11 @@ void spi_lld_ignore(SPIDriver *spip, size_t n) {
     SPIx_CTARn_ASC(0) | \
     SPIx_CTARn_DT(0)
 
+//    SPIx_CTARn_CPOL |				\
+//    SPIx_CTARn_CPHA |				\
+
 void spiRuntSetup(SPIDriver *spip) {
+  
   nvicDisableVector(DMA1_IRQn); // disable DMA, as this SPI lacks bidirectional DMA
   nvicEnableVector(SPI1_IRQn, KINETIS_SPI_SPI1_IRQ_PRIORITY); // use interrupts instead
   
