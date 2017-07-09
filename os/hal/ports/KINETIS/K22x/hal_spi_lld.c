@@ -23,6 +23,7 @@
  */
 
 #include "hal.h"
+#include "orderedmem.h"
 
 #if HAL_USE_SPI || defined(__DOXYGEN__)
 
@@ -109,40 +110,6 @@ static uint16_t dmaTxDummy = 0xFFFF;
 /* Driver local functions.                                                   */
 /*===========================================================================*/
 
-static void spi_rxconfig_nooptimize(SPIDriver *spip) {
-    /* Configure RX DMA */
-    if (spip->rxbuf) {
-      DMA->TCD[KINETIS_SPI0_RX_DMA_CHANNEL].DADDR = (uint32_t)spip->rxbuf;
-      DMA->TCD[KINETIS_SPI0_RX_DMA_CHANNEL].DOFF = spip->word_size;
-    } else {
-      DMA->TCD[KINETIS_SPI0_RX_DMA_CHANNEL].DADDR = (uint32_t)&dmaRxDummy;
-      DMA->TCD[KINETIS_SPI0_RX_DMA_CHANNEL].DOFF = 0;
-      osalDbgAssert(DMA->TCD[KINETIS_SPI0_RX_DMA_CHANNEL].DOFF == 0, "dma rx config error");
-    }
-    DMA->TCD[KINETIS_SPI0_RX_DMA_CHANNEL].BITER_ELINKNO = spip->count;
-    DMA->TCD[KINETIS_SPI0_RX_DMA_CHANNEL].CITER_ELINKNO = spip->count;
-
-    DMA->TCD[KINETIS_SPI0_RX_DMA_CHANNEL].CSR |= 0x8000; // turn on bandwidth control
-}
-
-static void spi_txconfig_nooptimize(SPIDriver *spip) {
-    /* Configure TX DMA */
-    if (spip->txbuf) {
-      
-      osalDbgAssert( ((uint32_t)spip->txbuf < 0x40000000), "txbuf invalid");
-      
-      DMA->TCD[KINETIS_SPI0_TX_DMA_CHANNEL].SADDR =  (uint32_t)spip->txbuf;
-      DMA->TCD[KINETIS_SPI0_TX_DMA_CHANNEL].SOFF = spip->word_size;
-    } else {
-      DMA->TCD[KINETIS_SPI0_TX_DMA_CHANNEL].SADDR =  (uint32_t)&dmaTxDummy;
-      DMA->TCD[KINETIS_SPI0_TX_DMA_CHANNEL].SOFF = 0;
-    }
-    DMA->TCD[KINETIS_SPI0_TX_DMA_CHANNEL].BITER_ELINKNO = spip->count;
-    DMA->TCD[KINETIS_SPI0_TX_DMA_CHANNEL].CITER_ELINKNO = spip->count;
-
-    DMA->TCD[KINETIS_SPI0_TX_DMA_CHANNEL].CSR |= 0x8000; // turn on bandwidth control
-}
-
 static void spi_start_xfer(SPIDriver *spip, bool polling)
 {
   /*
@@ -160,11 +127,35 @@ static void spi_start_xfer(SPIDriver *spip, bool polling)
         SPIx_RSER_TFFF_RE | SPIx_RSER_TFFF_DIRS;
 
     // make sure these proceed without interruption
-    syssts_t sts;
-    sts = osalSysGetStatusAndLockX();
-    spi_rxconfig_nooptimize(spip);
-    spi_txconfig_nooptimize(spip);
-    osalSysRestoreStatusX(sts);
+    /* Configure RX DMA */
+    if (spip->rxbuf) {
+      DMA->TCD[KINETIS_SPI0_RX_DMA_CHANNEL].DADDR = (uint32_t)spip->rxbuf;
+      DMA->TCD[KINETIS_SPI0_RX_DMA_CHANNEL].DOFF = spip->word_size;
+    } else {
+      DMA->TCD[KINETIS_SPI0_RX_DMA_CHANNEL].DADDR = (uint32_t)&dmaRxDummy;
+      DMA->TCD[KINETIS_SPI0_RX_DMA_CHANNEL].DOFF = 0;
+      osalDbgAssert(DMA->TCD[KINETIS_SPI0_RX_DMA_CHANNEL].DOFF == 0, "dma rx config error");
+    }
+    DMA->TCD[KINETIS_SPI0_RX_DMA_CHANNEL].BITER_ELINKNO = spip->count;
+    DMA->TCD[KINETIS_SPI0_RX_DMA_CHANNEL].CITER_ELINKNO = spip->count;
+
+    DMA->TCD[KINETIS_SPI0_RX_DMA_CHANNEL].CSR |= 0x8000; // turn on bandwidth control
+
+    /* Configure TX DMA */
+    if (spip->txbuf) {
+      
+      osalDbgAssert( ((uint32_t)spip->txbuf < 0x40000000), "txbuf invalid");
+      
+      DMA->TCD[KINETIS_SPI0_TX_DMA_CHANNEL].SADDR =  (uint32_t)spip->txbuf;
+      DMA->TCD[KINETIS_SPI0_TX_DMA_CHANNEL].SOFF = spip->word_size;
+    } else {
+      DMA->TCD[KINETIS_SPI0_TX_DMA_CHANNEL].SADDR =  (uint32_t)&dmaTxDummy;
+      DMA->TCD[KINETIS_SPI0_TX_DMA_CHANNEL].SOFF = 0;
+    }
+    DMA->TCD[KINETIS_SPI0_TX_DMA_CHANNEL].BITER_ELINKNO = spip->count;
+    DMA->TCD[KINETIS_SPI0_TX_DMA_CHANNEL].CITER_ELINKNO = spip->count;
+
+    DMA->TCD[KINETIS_SPI0_TX_DMA_CHANNEL].CSR |= 0x8000; // turn on bandwidth control
     
     /* Enable Request Register (ERQ) for RX by writing 0 to SERQ */
     DMA->SERQ = KINETIS_SPI0_RX_DMA_CHANNEL;
@@ -316,7 +307,8 @@ void spi_lld_start(SPIDriver *spip) {
     }
 #endif
 
-    nvicEnableVector(DMA0_IRQn, KINETIS_SPI0_RX_DMA_IRQ_PRIORITY);
+    //    nvicEnableVector(DMA0_IRQn, KINETIS_SPI0_RX_DMA_IRQ_PRIORITY);
+    nvicEnableVector(DMA0_IRQn, 3);
 
     SIM->SCGC6 |= SIM_SCGC6_DMAMUX;
     SIM->SCGC7 |= SIM_SCGC7_DMA;
