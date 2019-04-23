@@ -197,7 +197,7 @@ void pwm_lld_start(PWMDriver *pwmp) {
 
 #if KINETIS_PWM_USE_FTM2
     if (&PWMD3 == pwmp) {
-      SIM->SCGC3 |= SIM_SCGC3_FTM2;
+      SIM->SCGC6 |= SIM_SCGC6_FTM2_MASK;
       nvicEnableVector(FTM2_IRQn, KINETIS_PWM_FTM2_PRIORITY);
     }
 #endif
