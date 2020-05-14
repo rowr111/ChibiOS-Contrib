@@ -124,58 +124,70 @@ typedef struct
 } OSC_TypeDef;
 
 typedef struct  {
-  uint32_t SADDR;             /* TCD Source Address */
-  uint16_t SOFF;              /* TCD Signed Source Address Offset */
-  uint16_t ATTR;              /* TCD Transfer Attributes */
-  union {
-    uint32_t NBYTES_MLNO;     /* TCD Minor Byte Count (Minor Loop Disabled) */
-    uint32_t NBYTES_MLOFFNO;  /* TCD Signed Minor Loop Offset (Minor Loop Enabled and Offset Disabled) */
-    uint32_t NBYTES_MLOFFYES; /* TCD Signed Minor Loop Offset (Minor Loop and Offset Enabled) */
-  };
-  uint32_t SLAST;             /* TCD Last Source Address Adjustment */
-  uint32_t DADDR;             /* TCD Destination Address */
-  uint16_t DOFF;              /* TCD Signed Destination Address Offset */
-  union {
-    uint16_t CITER_ELINKNO;   /* TCD Current Minor Loop Link, Major Loop Count (Channel Linking Disabled)  */
-    uint16_t CITER_ELINKYES;  /* TCD Current Minor Loop Link, Major Loop Count (Channel Linking Enabled)  */
-  };
-  uint32_t DLASTSGA;          /* TCD Last Destination Address Adjustment/Scatter Gather Address */
-  uint16_t CSR;               /* TCD Control and Status */
-  union {
-    uint16_t BITER_ELINKNO;   /* TCD Beginning Minor Loop Link, Major Loop Count (Channel Linking Disabled) */
-    uint16_t BITER_ELINKYES;  /* TCD Beginning Minor Loop Link, Major Loop Count (Channel Linking Enabled) */
+    __IO uint32_t SADDR;                             /**< TCD Source Address, array offset: 0x1000, array step: 0x20 */
+    __IO uint16_t SOFF;                              /**< TCD Signed Source Address Offset, array offset: 0x1004, array step: 0x20 */
+    __IO uint16_t ATTR;                              /**< TCD Transfer Attributes, array offset: 0x1006, array step: 0x20 */
+    union {                                          /* offset: 0x1008, array step: 0x20 */
+      __IO uint32_t NBYTES_MLNO;                       /**< TCD Minor Byte Count (Minor Loop Disabled), array offset: 0x1008, array step: 0x20 */
+      __IO uint32_t NBYTES_MLOFFNO;                    /**< TCD Signed Minor Loop Offset (Minor Loop Enabled and Offset Disabled), array offset: 0x1008, array step: 0x20 */
+      __IO uint32_t NBYTES_MLOFFYES;                   /**< TCD Signed Minor Loop Offset (Minor Loop and Offset Enabled), array offset: 0x1008, array step: 0x20 */
+    };
+    __IO uint32_t SLAST;                             /**< TCD Last Source Address Adjustment, array offset: 0x100C, array step: 0x20 */
+    __IO uint32_t DADDR;                             /**< TCD Destination Address, array offset: 0x1010, array step: 0x20 */
+    __IO uint16_t DOFF;                              /**< TCD Signed Destination Address Offset, array offset: 0x1014, array step: 0x20 */
+    union {                                          /* offset: 0x1016, array step: 0x20 */
+      __IO uint16_t CITER_ELINKNO;                     /**< TCD Current Minor Loop Link, Major Loop Count (Channel Linking Disabled), array offset: 0x1016, array step: 0x20 */
+      __IO uint16_t CITER_ELINKYES;                    /**< TCD Current Minor Loop Link, Major Loop Count (Channel Linking Enabled), array offset: 0x1016, array step: 0x20 */
+    };
+    __IO uint32_t DLASTSGA;                         /**< TCD Last Destination Address Adjustment/Scatter Gather Address, array offset: 0x1018, array step: 0x20 */
+    __IO uint16_t CSR;                               /**< TCD Control and Status, array offset: 0x101C, array step: 0x20 */
+    union {                                          /* offset: 0x101E, array step: 0x20 */
+      __IO uint16_t BITER_ELINKNO;                     /**< TCD Beginning Minor Loop Link, Major Loop Count (Channel Linking Disabled), array offset: 0x101E, array step: 0x20 */
+      __IO uint16_t BITER_ELINKYES;                    /**< TCD Beginning Minor Loop Link, Major Loop Count (Channel Linking Enabled), array offset: 0x101E, array step: 0x20 */
   };
 } DMA_TCD_TypeDef;
 
 /** DMA - Peripheral register structure */
 typedef struct {
-  __IO uint32_t CR;             /* Control Register                         */
-  __IO uint32_t ES;             /* Error Status Register                    */
-  __IO uint8_t RESERVED_0[4];
-  __IO uint32_t ERQ;            /* Enable Request Register                  */
-  __IO uint8_t RESERVED_1[4];
-  __IO uint32_t EEI;            /* Enable Error Interrupt Register          */
-  __IO uint8_t CEEI;            /* Clear Enable Error Interrupt Register    */
-  __IO uint8_t SEEI;            /* Set Enable Error Interrupt Register      */
-  __IO uint8_t CERQ;            /* Clear Enable Request Register            */
-  __IO uint8_t SERQ;            /* Set Enable Request Register              */
-  __IO uint8_t CDNE;            /* Clear DONE Status Bit Register           */
-  __IO uint8_t SSRT;            /* Set START Bit Register                   */
-  __IO uint8_t CERR;            /* Clear Error Register                     */
-  __IO uint8_t CINT;            /* Clear Interrupt Request Register         */
-  __IO uint8_t RESERVED_2[4];
-  __IO uint32_t INT;            /* Interrupt Request Register               */
-  __IO uint8_t RESERVED_3[4];
-  __IO uint32_t ERR;            /* Error Register                           */
-  __IO uint8_t RESERVED_4[4];
-  __IO uint32_t HRS;            /* Hardware Request Status Register         */
-  __IO uint8_t RESERVED_5[200];
-  __IO uint8_t DCHPRI3;         /* Channel 3 Priority Register              */
-  __IO uint8_t DCHPRI2;         /* Channel 2 Priority Register              */
-  __IO uint8_t DCHPRI1;         /* Channel 1 Priority Register              */
-  __IO uint8_t DCHPRI0;         /* Channel 0 Priority Register              */
-  __IO uint8_t RESERVED_6[3836];
-  DMA_TCD_TypeDef TCD[4];
+  __IO uint32_t CR;                                /**< Control Register, offset: 0x0 */
+  __I  uint32_t ES;                                /**< Error Status Register, offset: 0x4 */
+       uint8_t RESERVED_0[4];
+  __IO uint32_t ERQ;                               /**< Enable Request Register, offset: 0xC */
+       uint8_t RESERVED_1[4];
+  __IO uint32_t EEI;                               /**< Enable Error Interrupt Register, offset: 0x14 */
+  __O  uint8_t CEEI;                               /**< Clear Enable Error Interrupt Register, offset: 0x18 */
+  __O  uint8_t SEEI;                               /**< Set Enable Error Interrupt Register, offset: 0x19 */
+  __O  uint8_t CERQ;                               /**< Clear Enable Request Register, offset: 0x1A */
+  __O  uint8_t SERQ;                               /**< Set Enable Request Register, offset: 0x1B */
+  __O  uint8_t CDNE;                               /**< Clear DONE Status Bit Register, offset: 0x1C */
+  __O  uint8_t SSRT;                               /**< Set START Bit Register, offset: 0x1D */
+  __O  uint8_t CERR;                               /**< Clear Error Register, offset: 0x1E */
+  __O  uint8_t CINT;                               /**< Clear Interrupt Request Register, offset: 0x1F */
+       uint8_t RESERVED_2[4];
+  __IO uint32_t INT;                               /**< Interrupt Request Register, offset: 0x24 */
+       uint8_t RESERVED_3[4];
+  __IO uint32_t ERR;                               /**< Error Register, offset: 0x2C */
+       uint8_t RESERVED_4[4];
+  __IO uint32_t HRS;                               /**< Hardware Request Status Register, offset: 0x34 */
+       uint8_t RESERVED_5[200];
+  __IO uint8_t DCHPRI3;                            /**< Channel n Priority Register, offset: 0x100 */
+  __IO uint8_t DCHPRI2;                            /**< Channel n Priority Register, offset: 0x101 */
+  __IO uint8_t DCHPRI1;                            /**< Channel n Priority Register, offset: 0x102 */
+  __IO uint8_t DCHPRI0;                            /**< Channel n Priority Register, offset: 0x103 */
+  __IO uint8_t DCHPRI7;                            /**< Channel n Priority Register, offset: 0x104 */
+  __IO uint8_t DCHPRI6;                            /**< Channel n Priority Register, offset: 0x105 */
+  __IO uint8_t DCHPRI5;                            /**< Channel n Priority Register, offset: 0x106 */
+  __IO uint8_t DCHPRI4;                            /**< Channel n Priority Register, offset: 0x107 */
+  __IO uint8_t DCHPRI11;                           /**< Channel n Priority Register, offset: 0x108 */
+  __IO uint8_t DCHPRI10;                           /**< Channel n Priority Register, offset: 0x109 */
+  __IO uint8_t DCHPRI9;                            /**< Channel n Priority Register, offset: 0x10A */
+  __IO uint8_t DCHPRI8;                            /**< Channel n Priority Register, offset: 0x10B */
+  __IO uint8_t DCHPRI15;                           /**< Channel n Priority Register, offset: 0x10C */
+  __IO uint8_t DCHPRI14;                           /**< Channel n Priority Register, offset: 0x10D */
+  __IO uint8_t DCHPRI13;                           /**< Channel n Priority Register, offset: 0x10E */
+  __IO uint8_t DCHPRI12;                           /**< Channel n Priority Register, offset: 0x10F */
+       uint8_t RESERVED_6[3824];
+  DMA_TCD_TypeDef TCD[16];
 } DMA_TypeDef;
 
 typedef struct
@@ -1162,11 +1174,21 @@ typedef struct
 /*                                                              */
 /****************************************************************/
 /********  Bits definition for DMAMUX_CHCFGn register  **********/
+#define DMAMUX_CHCFG_SOURCE_MASK                 0x3Fu
+#define DMAMUX_CHCFG_SOURCE_SHIFT                0
+#define DMAMUX_CHCFG_SOURCE_WIDTH                6
+#define DMAMUX_CHCFG_SOURCE(x)                   (((uint8_t)(((uint8_t)(x))<<DMAMUX_CHCFG_SOURCE_SHIFT))&DMAMUX_CHCFG_SOURCE_MASK)
+#define DMAMUX_CHCFG_ENBL_MASK                   0x80u
 #define DMAMUX_CHCFGn_ENBL           ((uint8_t)((uint8_t)1 << 7))  /*!< DMA Channel Enable */
 #define DMAMUX_CHCFGn_TRIG           ((uint8_t)((uint8_t)1 << 6))  /*!< DMA Channel Trigger Enable */
 #define DMAMUX_CHCFGn_SOURCE_SHIFT   0                                                                                      /*!< DMA Channel Source (Slot) (shift) */
 #define DMAMUX_CHCFGn_SOURCE_MASK    ((uint8_t)((uint8_t)0x3F << DMAMUX_CHCFGn_SOURCE_SHIFT))                               /*!< DMA Channel Source (Slot) (mask) */
 #define DMAMUX_CHCFGn_SOURCE(x)      ((uint8_t)(((uint8_t)(x) << DMAMUX_CHCFGn_SOURCE_SHIFT) & DMAMUX_CHCFGn_SOURCE_MASK))  /*!< DMA Channel Source (Slot) */
+
+#define DMA_CSR_MAJORELINK_MASK                  0x20u
+#define DMA_CSR_MAJORELINK_SHIFT                 5
+#define DMA_CSR_MAJORELINK_WIDTH                 1
+#define DMA_CSR_MAJORELINK(x)                    (((uint16_t)(((uint16_t)(x))<<DMA_CSR_MAJORELINK_SHIFT))&DMA_CSR_MAJORELINK_MASK)
 
 /****************************************************************/
 /*                                                              */

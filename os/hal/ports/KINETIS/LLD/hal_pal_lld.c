@@ -178,7 +178,7 @@ void _pal_lld_setpadmode(ioportid_t port,
     break;
   }
   
-  portcfg->PCR[pad] |= PORT_PCR_SRE_MASK; // set all ports to slow slew rate, reduce noise
+  //  portcfg->PCR[pad] |= PORT_PCR_SRE_MASK; // set all ports to slow slew rate, reduce noise
   
 }
 

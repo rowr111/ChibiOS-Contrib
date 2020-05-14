@@ -15,4 +15,5 @@ PLATFORMSRC = ${CHIBIOS}/os/hal/ports/common/ARMCMx/nvic.c \
 # Required include directories
 PLATFORMINC = ${CHIBIOS}/os/hal/ports/common/ARMCMx \
               ${CHIBIOS_CONTRIB}/os/hal/ports/KINETIS/K20x \
-              ${CHIBIOS_CONTRIB}/os/hal/ports/KINETIS/LLD
+              ${CHIBIOS_CONTRIB}/os/hal/ports/KINETIS/LLD \
+              ${CHIBIOS}/os/hal/ports/KINETIS/LLD
