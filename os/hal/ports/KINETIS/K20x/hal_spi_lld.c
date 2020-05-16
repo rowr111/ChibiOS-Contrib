@@ -23,6 +23,7 @@
  */
 
 #include "hal.h"
+#include "orderedmem.h"
 
 #if HAL_USE_SPI || defined(__DOXYGEN__)
 
@@ -71,13 +72,15 @@
 #endif
 
 #if KINETIS_SPI_USE_SPI0
-#define DMAMUX_SPI_RX_SOURCE    16
-#define DMAMUX_SPI_TX_SOURCE    17
+#define DMAMUX_SPI_RX_SOURCE    14
+#define DMAMUX_SPI_TX_SOURCE    15
 #endif
 
+#if 0
 #if KINETIS_SPI_USE_SPI1
-#define DMAMUX_SPI_RX_SOURCE    18
-#define DMAMUX_SPI_TX_SOURCE    19
+#define DMAMUX_SPI_RX_SOURCE    16
+#define DMAMUX_SPI_TX_SOURCE    16
+#endif
 #endif
 
 /*===========================================================================*/
@@ -113,49 +116,33 @@ static void spi_start_xfer(SPIDriver *spip, bool polling)
    * Enable the DSPI peripheral in master mode.
    * Clear the TX and RX FIFOs.
    * */
-  spip->spi->MCR = SPIx_MCR_MSTR | SPIx_MCR_CLR_TXF | SPIx_MCR_CLR_RXF;
+  writel( &spip->spi->MCR, SPIx_MCR_MSTR | SPIx_MCR_CLR_TXF | SPIx_MCR_CLR_RXF | SPIx_MCR_HALT );
 
-  /* If we are not polling then enable DMA */
-  if (!polling) {
+#if KINETIS_SPI_USE_SPI0
+  uint32_t pushr;
+  if( spip->count == 0 )
+    return;  // abort if we were called with null data
 
-    /* Enable receive dma and transmit dma */
-    spip->spi->RSER = SPIx_RSER_RFDF_DIRS | SPIx_RSER_RFDF_RE |
-        SPIx_RSER_TFFF_RE | SPIx_RSER_TFFF_DIRS;
+  writel( &spip->spi->MCR, readl(&spip->spi->MCR) & ~SPIx_MCR_HALT); // clear the halt bit 
 
-    /* Configure RX DMA */
-    if (spip->rxbuf) {
-      DMA->TCD[KINETIS_SPI0_RX_DMA_CHANNEL].DADDR = (uint32_t)spip->rxbuf;
-      DMA->TCD[KINETIS_SPI0_RX_DMA_CHANNEL].DOFF = spip->word_size;
-    } else {
-      DMA->TCD[KINETIS_SPI0_RX_DMA_CHANNEL].DADDR = (uint32_t)&dmaRxDummy;
-      DMA->TCD[KINETIS_SPI0_RX_DMA_CHANNEL].DOFF = 0;
-    }
-    DMA->TCD[KINETIS_SPI0_RX_DMA_CHANNEL].BITER_ELINKNO = spip->count;
-    DMA->TCD[KINETIS_SPI0_RX_DMA_CHANNEL].CITER_ELINKNO = spip->count;
+  
+  writel( &spip->spi->SR, readl( &spip->spi->SR) | SPIx_SR_TCF); // clear the TCF so it can flip
+  writel( &spip->spi->RSER, readl( &spip->spi->RSER ) | SPIx_RSER_TCF_RE ); // enable int on frame complete, to initiate chaining
 
-    /* Enable Request Register (ERQ) for RX by writing 0 to SERQ */
-    DMA->SERQ = KINETIS_SPI0_RX_DMA_CHANNEL;
+  if( spip->txbuf != NULL )
+    pushr = SPI_PUSHR_CTCNT_MASK | spip->txbuf[0]; // clear TCR with push
+  else
+    pushr = SPI_PUSHR_CTCNT_MASK | 0xFF;
+  writel( &spip->spi->PUSHR, pushr ); // kicks off a send of one data, ISR fires when done
+#endif
 
-    /* Configure TX DMA */
-    if (spip->txbuf) {
-      DMA->TCD[KINETIS_SPI0_TX_DMA_CHANNEL].SADDR =  (uint32_t)spip->txbuf;
-      DMA->TCD[KINETIS_SPI0_TX_DMA_CHANNEL].SOFF = spip->word_size;
-    } else {
-      DMA->TCD[KINETIS_SPI0_TX_DMA_CHANNEL].SADDR =  (uint32_t)&dmaTxDummy;
-      DMA->TCD[KINETIS_SPI0_TX_DMA_CHANNEL].SOFF = 0;
-    }
-    DMA->TCD[KINETIS_SPI0_TX_DMA_CHANNEL].BITER_ELINKNO = spip->count;
-    DMA->TCD[KINETIS_SPI0_TX_DMA_CHANNEL].CITER_ELINKNO = spip->count;
-
-    /* Enable Request Register (ERQ) for TX by writing 1 to SERQ */
-    DMA->SERQ = KINETIS_SPI0_TX_DMA_CHANNEL;
-  }
 }
 
 static void spi_stop_xfer(SPIDriver *spip)
 {
+  writel( &spip->spi->RSER, 0); // disable interrupts
   /* Halt the DSPI peripheral */
-  spip->spi->MCR = SPIx_MCR_MSTR | SPIx_MCR_HALT;
+  writel( &spip->spi->MCR, SPIx_MCR_MSTR | SPIx_MCR_HALT );
 
   /* Clear all the flags which are currently set. */
   spip->spi->SR |= spip->spi->SR;
@@ -167,15 +154,32 @@ static void spi_stop_xfer(SPIDriver *spip)
 
 #if KINETIS_SPI_USE_SPI0 || defined(__DOXYGEN__)
 
-OSAL_IRQ_HANDLER(KINETIS_DMA0_IRQ_VECTOR) {
+uint32_t num_spi0_int = 0;
+
+OSAL_IRQ_HANDLER(KINETIS_SPI0_IRQ_VECTOR) {
   OSAL_IRQ_PROLOGUE();
 
-  /* Clear bit 0 in Interrupt Request Register (INT) by writing 0 to CINT */
-  DMA->CINT = KINETIS_SPI0_RX_DMA_CHANNEL;
-
-  spi_stop_xfer(&SPID1);
-
-  _spi_isr_code(&SPID1);
+  num_spi0_int++;
+  
+  if( SPID1.rxbuf != NULL ) {
+    SPID1.rxbuf[ (SPID1.spi->TCR >> 16) - 1 ] = SPID1.spi->POPR;
+  }
+  
+  if( SPID1.count > (SPID1.spi->TCR >> 16) ) {
+    // clear the TCF
+    SPID1.spi->SR |= SPIx_SR_TCF;
+    // kick off another transfer, and we'll be back here again...
+    //    SPID1.spi->PUSHR = SPID1.txbuf[(SPID1.spi->TCR >> 16)] | SPIx_PUSHR_PCS(1) | SPI_PUSHR_CONT_MASK;
+    if( SPID1.txbuf != NULL )
+      SPID1.spi->PUSHR = SPID1.txbuf[(SPID1.spi->TCR >> 16)];
+    else
+      SPID1.spi->PUSHR = 0xFF;
+  } else {
+    SPID1.spi->RSER &= ~SPIx_RSER_TCF_RE; // disable interrupt on frame complete, we're done.
+    // palSetPad(IOPORT4, 4); // de-assert CS line  // now under manual control
+    spi_stop_xfer(&SPID1);
+    _spi_isr_code(&SPID1);
+  }
 
   OSAL_IRQ_EPILOGUE();
 }
@@ -184,19 +188,30 @@ OSAL_IRQ_HANDLER(KINETIS_DMA0_IRQ_VECTOR) {
 
 #if KINETIS_SPI_USE_SPI1 || defined(__DOXYGEN__)
 
-OSAL_IRQ_HANDLER(KINETIS_DMA0_IRQ_VECTOR) {
+OSAL_IRQ_HANDLER(KINETIS_SPI1_IRQ_VECTOR) {
   OSAL_IRQ_PROLOGUE();
 
+  if( SPID2.rxbuf != NULL ) {
+    SPID2.rxbuf[ (SPID2.spi->TCR >> 16) - 1 ] = SPID2.spi->POPR;
+  }
+
   /* Clear bit 0 in Interrupt Request Register (INT) by writing 0 to CINT */
-  DMA->CINT = KINETIS_SPI1_RX_DMA_CHANNEL;
-
-  spi_stop_xfer(&SPID2);
-
-  _spi_isr_code(&SPID2);
+  //DMA->CINT = KINETIS_SPI1_RX_DMA_CHANNEL; // no DMA, instead check and refill
+  if( SPID2.count > (SPID2.spi->TCR >> 16) ) {
+    // clear the TCF
+    SPID2.spi->SR |= SPIx_SR_TCF;
+    // kick off another transfer, and we'll be back here again...
+    //    SPID2.spi->PUSHR = SPID2.txbuf[(SPID2.spi->TCR >> 16)] | SPIx_PUSHR_PCS(1) | SPI_PUSHR_CONT_MASK;
+    SPID2.spi->PUSHR = SPID2.txbuf[(SPID2.spi->TCR >> 16)];
+  } else {
+    SPID2.spi->RSER &= ~SPIx_RSER_TCF_RE; // disable interrupt on frame complete, we're done.
+    // palSetPad(IOPORT4, 4); // de-assert CS line  // now under manual control
+    spi_stop_xfer(&SPID2);
+    _spi_isr_code(&SPID2);
+  }
 
   OSAL_IRQ_EPILOGUE();
 }
-
 #endif
 
 /*===========================================================================*/
@@ -243,6 +258,16 @@ void spi_lld_start(SPIDriver *spip) {
         spip->spi->CTAR[0] = KINETIS_SPI_TAR0_DEFAULT;
       }
     }
+
+    nvicDisableVector(DMA0_IRQn); // disable DMA, as this SPI lacks bidirectional DMA
+    nvicEnableVector(SPI0_IRQn, KINETIS_SPI_SPI0_IRQ_PRIORITY);
+    /* Extract the frame size from the TAR */
+    uint16_t frame_size = ((spip->spi->CTAR[0] >> SPIx_CTARn_FMSZ_SHIFT) &
+        SPIx_CTARn_FMSZ_MASK) + 1;
+
+    /* DMA word size is 2 for a 16 bit frame size */
+    spip->word_size = frame_size > 8 ? 2 : 1;
+    
 #endif
 
 #if KINETIS_SPI_USE_SPI1
@@ -261,95 +286,6 @@ void spi_lld_start(SPIDriver *spip) {
     }
 #endif
 
-    nvicEnableVector(DMA0_IRQn, KINETIS_SPI0_RX_DMA_IRQ_PRIORITY);
-
-    SIM->SCGC6 |= SIM_SCGC6_DMAMUX;
-    SIM->SCGC7 |= SIM_SCGC7_DMA;
-
-    /* Clear DMA error flags */
-    DMA->ERR = 0x0F;
-
-#if KINETIS_SPI_USE_SPI0
-    /* Rx, select SPI Rx FIFO */
-    DMAMUX->CHCFG[KINETIS_SPI0_RX_DMAMUX_CHANNEL] = DMAMUX_CHCFGn_ENBL |
-        DMAMUX_CHCFGn_SOURCE(DMAMUX_SPI_RX_SOURCE);
-
-    /* Tx, select SPI Tx FIFO */
-    DMAMUX->CHCFG[KINETIS_SPI0_TX_DMAMUX_CHANNEL] = DMAMUX_CHCFGn_ENBL |
-        DMAMUX_CHCFGn_SOURCE(DMAMUX_SPI_TX_SOURCE);
-
-    /* Extract the frame size from the TAR */
-    uint16_t frame_size = ((spip->spi->CTAR[0] >> SPIx_CTARn_FMSZ_SHIFT) &
-        SPIx_CTARn_FMSZ_MASK) + 1;
-
-    /* DMA transfer size is 16 bits for a frame size > 8 bits */
-    uint16_t dma_size = frame_size > 8 ? 1 : 0;
-
-    /* DMA word size is 2 for a 16 bit frame size */
-    spip->word_size = frame_size > 8 ? 2 : 1;
-
-    /* configure DMA RX fixed values */
-    DMA->TCD[KINETIS_SPI0_RX_DMA_CHANNEL].SADDR = (uint32_t)&SPI0->POPR;
-    DMA->TCD[KINETIS_SPI0_RX_DMA_CHANNEL].SOFF = 0;
-    DMA->TCD[KINETIS_SPI0_RX_DMA_CHANNEL].SLAST = 0;
-    DMA->TCD[KINETIS_SPI0_RX_DMA_CHANNEL].DLASTSGA = 0;
-    DMA->TCD[KINETIS_SPI0_RX_DMA_CHANNEL].ATTR = DMA_ATTR_SSIZE(dma_size) |
-        DMA_ATTR_DSIZE(dma_size);
-    DMA->TCD[KINETIS_SPI0_RX_DMA_CHANNEL].NBYTES_MLNO = spip->word_size;
-    DMA->TCD[KINETIS_SPI0_RX_DMA_CHANNEL].CSR = DMA_CSR_DREQ_MASK |
-        DMA_CSR_INTMAJOR_MASK;
-
-    /* configure DMA TX fixed values */
-    DMA->TCD[KINETIS_SPI0_TX_DMA_CHANNEL].SLAST = 0;
-    DMA->TCD[KINETIS_SPI0_TX_DMA_CHANNEL].DADDR = (uint32_t)&SPI0->PUSHR;
-    DMA->TCD[KINETIS_SPI0_TX_DMA_CHANNEL].DOFF = 0;
-    DMA->TCD[KINETIS_SPI0_TX_DMA_CHANNEL].DLASTSGA = 0;
-    DMA->TCD[KINETIS_SPI0_TX_DMA_CHANNEL].ATTR = DMA_ATTR_SSIZE(dma_size) |
-        DMA_ATTR_DSIZE(dma_size);
-    DMA->TCD[KINETIS_SPI0_TX_DMA_CHANNEL].NBYTES_MLNO = spip->word_size;
-    DMA->TCD[KINETIS_SPI0_TX_DMA_CHANNEL].CSR = DMA_CSR_DREQ_MASK;
-#endif
-
-#if KINETIS_SPI_USE_SPI1
-    /* Rx, select SPI Rx FIFO */
-    DMAMUX->CHCFG[KINETIS_SPI1_RX_DMAMUX_CHANNEL] = DMAMUX_CHCFGn_ENBL |
-        DMAMUX_CHCFGn_SOURCE(DMAMUX_SPI_RX_SOURCE);
-
-    /* Tx, select SPI Tx FIFO */
-    DMAMUX->CHCFG[KINETIS_SPI1_TX_DMAMUX_CHANNEL] = DMAMUX_CHCFGn_ENBL |
-        DMAMUX_CHCFGn_SOURCE(DMAMUX_SPI_TX_SOURCE);
-
-    /* Extract the frame size from the TAR */
-    uint16_t frame_size = ((spip->spi->CTAR[0] >> SPIx_CTARn_FMSZ_SHIFT) &
-        SPIx_CTARn_FMSZ_MASK) + 1;
-
-    /* DMA transfer size is 16 bits for a frame size > 8 bits */
-    uint16_t dma_size = frame_size > 8 ? 1 : 0;
-
-    /* DMA word size is 2 for a 16 bit frame size */
-    spip->word_size = frame_size > 8 ? 2 : 1;
-
-    /* configure DMA RX fixed values */
-    DMA->TCD[KINETIS_SPI1_RX_DMA_CHANNEL].SADDR = (uint32_t)&SPI1->POPR;
-    DMA->TCD[KINETIS_SPI1_RX_DMA_CHANNEL].SOFF = 0;
-    DMA->TCD[KINETIS_SPI1_RX_DMA_CHANNEL].SLAST = 0;
-    DMA->TCD[KINETIS_SPI1_RX_DMA_CHANNEL].DLASTSGA = 0;
-    DMA->TCD[KINETIS_SPI1_RX_DMA_CHANNEL].ATTR = DMA_ATTR_SSIZE(dma_size) |
-        DMA_ATTR_DSIZE(dma_size);
-    DMA->TCD[KINETIS_SPI1_RX_DMA_CHANNEL].NBYTES_MLNO = spip->word_size;
-    DMA->TCD[KINETIS_SPI1_RX_DMA_CHANNEL].CSR = DMA_CSR_DREQ_MASK |
-        DMA_CSR_INTMAJOR_MASK;
-
-    /* configure DMA TX fixed values */
-    DMA->TCD[KINETIS_SPI1_TX_DMA_CHANNEL].SLAST = 0;
-    DMA->TCD[KINETIS_SPI1_TX_DMA_CHANNEL].DADDR = (uint32_t)&SPI1->PUSHR;
-    DMA->TCD[KINETIS_SPI1_TX_DMA_CHANNEL].DOFF = 0;
-    DMA->TCD[KINETIS_SPI1_TX_DMA_CHANNEL].DLASTSGA = 0;
-    DMA->TCD[KINETIS_SPI1_TX_DMA_CHANNEL].ATTR = DMA_ATTR_SSIZE(dma_size) |
-        DMA_ATTR_DSIZE(dma_size);
-    DMA->TCD[KINETIS_SPI1_TX_DMA_CHANNEL].NBYTES_MLNO = spip->word_size;
-    DMA->TCD[KINETIS_SPI1_TX_DMA_CHANNEL].CSR = DMA_CSR_DREQ_MASK;
-#endif
   }
 }
 
@@ -365,31 +301,18 @@ void spi_lld_stop(SPIDriver *spip) {
   /* If in ready state then disables the SPI clock.*/
   if (spip->state == SPI_READY) {
 
-    nvicDisableVector(DMA0_IRQn);
-
-    SIM->SCGC7 &= ~SIM_SCGC7_DMA;
-    SIM->SCGC6 &= ~SIM_SCGC6_DMAMUX;
-
 #if KINETIS_SPI_USE_SPI0
     if (&SPID1 == spip) {
       /* SPI halt.*/
-      spip->spi->MCR |= SPIx_MCR_HALT;
+      spip->spi->MCR |= SPIx_MCR_HALT; // this allows configs to be safely modified
     }
-
-    /* Disable the clock for SPI0 */
-    SIM->SCGC6 &= ~SIM_SCGC6_SPI0;
+    spip->state = SPI_STOP;
+    
 #endif
-
-#if KINETIS_SPI_USE_SPI1
-    if (&SPID2 == spip) {
-      /* SPI halt.*/
-      spip->spi->MCR |= SPIx_MCR_HALT;
-    }
-
-    /* Disable the clock for SPI1 */
-    SIM->SCGC6 &= ~SIM_SCGC6_SPI1;
-#endif
+    
   }
+  
+  
 }
 
 /**
@@ -437,6 +360,62 @@ void spi_lld_ignore(SPIDriver *spip, size_t n) {
   spi_start_xfer(spip, false);
 }
 
+// clocked off of bus clock @ 50MHz
+// BR(2) -> /5, PBR() -> /2, final speed is 50/10 = 5MHz
+// changed PBR(1) -> /3, so speed is now 50% slower...
+#define KINETIS_SPI_TAR_BUSCLK_XZ(n)		\
+    SPIx_CTARn_FMSZ((n) - 1) | \
+    SPIx_CTARn_DBR | \
+    SPIx_CTARn_PBR(1) | \
+    SPIx_CTARn_BR(2) |	  \
+    SPIx_CTARn_CSSCK(0) | \
+    SPIx_CTARn_ASC(0) | \
+    SPIx_CTARn_DT(0)
+
+//    SPIx_CTARn_CPOL |				\
+//    SPIx_CTARn_CPHA |				\
+
+void spiRuntSetup(SPIDriver *spip) {
+  
+  nvicDisableVector(DMA1_IRQn); // disable DMA, as this SPI lacks bidirectional DMA
+  nvicEnableVector(SPI1_IRQn, KINETIS_SPI_SPI1_IRQ_PRIORITY); // use interrupts instead
+  
+  spip->spi->MCR = SPIx_MCR_MSTR | SPIx_MCR_CLR_TXF | \
+    SPIx_MCR_CLR_RXF | SPIx_MCR_DIS_RXF | SPIx_MCR_DIS_TXF | SPIx_MCR_CLR_TXF;
+  spip->spi->CTAR[0] = KINETIS_SPI_TAR_BUSCLK_XZ(8);  // 8-bit frame size
+  
+  //  spip->spi->MCR |= SPIx_MCR_PCSIS(1); // set to active low for CS0
+  palSetPad(IOPORT4, 4); // clear the CS line
+}
+
+static void noopt4(SPIDriver *spip) {
+  uint32_t pushr;
+  
+  //  pushr = SPI_PUSHR_CONT_MASK | SPI_PUSHR_CTCNT_MASK | SPIx_PUSHR_PCS(1) | spip->txbuf[0]; // clear TCR with push
+  pushr = SPI_PUSHR_CTCNT_MASK | spip->txbuf[0]; // clear TCR with push
+  spip->spi->PUSHR = pushr; // kicks off a send of one data, ISR fires when done
+}
+
+void spi_start_xfer_runt(SPIDriver *spip) {
+
+  if( spip->count == 0 )
+    return;  // abort if we were called with null data
+
+  if( spip->txbuf == NULL )
+    spip->txbuf = spip->rxbuf;  // dummy send rx buf data
+
+  spip->spi->MCR |= SPIx_MCR_DIS_RXF | SPIx_MCR_CLR_RXF | SPIx_MCR_DIS_TXF | SPIx_MCR_CLR_TXF; // disable fifos
+  spip->spi->MCR &= ~SPIx_MCR_HALT; // clear the halt bit, chibios sets it every time the transfer is done
+  // palClearPad(IOPORT4, 4); // assert CS line  // this is now on "manual" control
+  
+  spip->spi->SR |= SPIx_SR_TCF; // clear the TCF so it can flip
+  spip->spi->RSER |= SPIx_RSER_TCF_RE; // enable interrupt on frame complete, to initiate chaining
+  
+  noopt4(spip); // make sure this command comes last in case things are pushed around by the optimizer
+  
+  return;
+}
+
 /**
  * @brief   Exchanges data on the SPI bus.
  * @details This asynchronous function starts a simultaneous transmit/receive
@@ -459,7 +438,14 @@ void spi_lld_exchange(SPIDriver *spip, size_t n,
   spip->rxbuf = rxbuf;
   spip->txbuf = txbuf;
 
-  spi_start_xfer(spip, false);
+#if KINETIS_SPI_USE_SPI0 || defined(__DOXYGEN__)
+  if( spip == &SPID1 ) 
+    spi_start_xfer(spip, false);
+  else
+    spi_start_xfer_runt(spip);
+#else
+    spi_start_xfer_runt(spip);
+#endif
 }
 
 /**
@@ -481,7 +467,14 @@ void spi_lld_send(SPIDriver *spip, size_t n, const void *txbuf) {
   spip->rxbuf = NULL;
   spip->txbuf = (void *)txbuf;
 
-  spi_start_xfer(spip, false);
+#if KINETIS_SPI_USE_SPI0 || defined(__DOXYGEN__)
+  if( spip == &SPID1 ) 
+    spi_start_xfer(spip, false);
+  else
+    spi_start_xfer_runt(spip);
+#else
+    spi_start_xfer_runt(spip);
+#endif
 }
 
 /**
@@ -503,7 +496,14 @@ void spi_lld_receive(SPIDriver *spip, size_t n, void *rxbuf) {
   spip->rxbuf = rxbuf;
   spip->txbuf = NULL;
 
-  spi_start_xfer(spip, false);
+#if KINETIS_SPI_USE_SPI0 || defined(__DOXYGEN__)
+  if( spip == &SPID1 ) 
+    spi_start_xfer(spip, false);
+  else
+    spi_start_xfer_runt(spip);
+#else
+    spi_start_xfer_runt(spip);
+#endif
 }
 
 /**

@@ -1753,6 +1753,7 @@ typedef struct
 #define TSIx_TSHD_THRESL_MASK       ((uint32_t)((uint32_t)0xFFFF << TSIx_TSHD_THRESL_SHIFT))                         /*!< TSI Wakeup Channel Low-Threshold (mask) */
 #define TSIx_TSHD_THRESL(x)         ((uint32_t)(((uint32_t)(x) << TSIx_TSHD_THRESL_SHIFT) & TSIx_TSHD_THRESL_MASK))  /*!< TSI Wakeup Channel Low-Threshold */
 
+#if 0
 /****************************************************************/
 /*                                                              */
 /*             Multipurpose Clock Generator (MCG)               */
@@ -1846,7 +1847,7 @@ typedef struct
 #define MCG_C8_LOLRE                ((uint8_t)0x40)   /*!< PLL Loss of Lock Reset Enable */
 #define MCG_C8_CME1                 ((uint8_t)0x20)   /*!< PLL Clock Monitor Enable */
 #define MCG_C8_LOCS1                ((uint8_t)0x01)   /*!< RTC Loss of Clock Status */
-
+#endif 
 /****************************************************************/
 /*                                                              */
 /*             Serial Peripheral Interface (SPI)                */

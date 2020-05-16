@@ -479,6 +479,7 @@ typedef struct
 #define SIM_SOPT2_TRACECLKSEL_SHIFT              12
 #define SIM_SOPT2_TRACECLKSEL_WIDTH              1
 #define SIM_SOPT2_PLLFLLSEL                 0x10000u
+#define SIM_SOPT2_PLLFLLSEL_MASK                 0x10000u
 #define SIM_SOPT2_PLLFLLSEL_SHIFT                16
 #define SIM_SOPT2_PLLFLLSEL_WIDTH                1
 #define SIM_SOPT2_USBSRC                    0x40000u
@@ -653,6 +654,7 @@ typedef struct
 #define SIM_SCGC5_TSI_SHIFT                      5
 #define SIM_SCGC5_TSI_WIDTH                      1
 #define SIM_SCGC5_PORTA                     0x200u
+#define SIM_SCGC5_PORTA_MASK                     0x200u
 #define SIM_SCGC5_PORTA_SHIFT                    9
 #define SIM_SCGC5_PORTA_WIDTH                    1
 #define SIM_SCGC5_PORTB                     0x400u
@@ -1737,6 +1739,363 @@ typedef struct {
 /*!
  * @}
  */ /* end of group SMC_Peripheral_Access_Layer */
+
+#define SPI_PUSHR_CTCNT_MASK                     0x4000000u
+
+
+/* ----------------------------------------------------------------------------
+   -- MCG Register Masks
+   ---------------------------------------------------------------------------- */
+
+/*!
+ * @addtogroup MCG_Register_Masks MCG Register Masks
+ * @{
+ */
+
+/* C1 Bit Fields */
+#define MCG_C1_IREFSTEN                     0x1u
+#define MCG_C1_IREFSTEN_SHIFT                    0
+#define MCG_C1_IREFSTEN_WIDTH                    1
+#define MCG_C1_IRCLKEN                      0x2u
+#define MCG_C1_IRCLKEN_SHIFT                     1
+#define MCG_C1_IRCLKEN_WIDTH                     1
+#define MCG_C1_IREFS                        0x4u
+#define MCG_C1_IREFS_MASK                        0x4u
+#define MCG_C1_IREFS_SHIFT                       2
+#define MCG_C1_IREFS_WIDTH                       1
+#define MCG_C1_FRDIV_MASK                        0x38u
+#define MCG_C1_FRDIV_SHIFT                       3
+#define MCG_C1_FRDIV_WIDTH                       3
+#define MCG_C1_FRDIV(x)                          (((uint8_t)(((uint8_t)(x))<<MCG_C1_FRDIV_SHIFT))&MCG_C1_FRDIV)
+#define MCG_C1_CLKS_MASK                         0xC0u
+#define MCG_C1_CLKS_SHIFT                        6
+#define MCG_C1_CLKS_WIDTH                        2
+#define MCG_C1_CLKS(x)                           (((uint8_t)(((uint8_t)(x))<<MCG_C1_CLKS_SHIFT))&MCG_C1_CLKS_MASK)
+/* C2 Bit Fields */
+#define MCG_C2_IRCS                         0x1u
+#define MCG_C2_IRCS_MASK                         0x1u
+#define MCG_C2_IRCS_SHIFT                        0
+#define MCG_C2_IRCS_WIDTH                        1
+#define MCG_C2_LP                           0x2u
+#define MCG_C2_LP_MASK                           0x2u
+#define MCG_C2_LP_SHIFT                          1
+#define MCG_C2_LP_WIDTH                          1
+#define MCG_C2_EREFS0                       0x4u
+#define MCG_C2_EREFS0_MASK                       0x4u
+#define MCG_C2_EREFS0_SHIFT                      2
+#define MCG_C2_EREFS0_WIDTH                      1
+#define MCG_C2_HGO0                         0x8u
+#define MCG_C2_HGO0_SHIFT                        3
+#define MCG_C2_HGO0_WIDTH                        1
+#define MCG_C2_RANGE0_MASK                       0x30u
+#define MCG_C2_RANGE0_SHIFT                      4
+#define MCG_C2_RANGE0_WIDTH                      2
+#define MCG_C2_RANGE0(x)                         (((uint8_t)(((uint8_t)(x))<<MCG_C2_RANGE0_SHIFT))&MCG_C2_RANGE0_MASK)
+#define MCG_C2_LOCRE0                       0x80u
+#define MCG_C2_LOCRE0_SHIFT                      7
+#define MCG_C2_LOCRE0_WIDTH                      1
+/* C3 Bit Fields */
+#define MCG_C3_SCTRIM_MASK                       0xFFu
+#define MCG_C3_SCTRIM_SHIFT                      0
+#define MCG_C3_SCTRIM_WIDTH                      8
+#define MCG_C3_SCTRIM(x)                         (((uint8_t)(((uint8_t)(x))<<MCG_C3_SCTRIM_SHIFT))&MCG_C3_SCTRIM_MASK)
+/* C4 Bit Fields */
+#define MCG_C4_SCFTRIM                      0x1u
+#define MCG_C4_SCFTRIM_MASK                      0x1u
+#define MCG_C4_SCFTRIM_SHIFT                     0
+#define MCG_C4_SCFTRIM_WIDTH                     1
+#define MCG_C4_FCTRIM_MASK                       0x1Eu
+#define MCG_C4_FCTRIM_SHIFT                      1
+#define MCG_C4_FCTRIM_WIDTH                      4
+#define MCG_C4_FCTRIM(x)                         (((uint8_t)(((uint8_t)(x))<<MCG_C4_FCTRIM_SHIFT))&MCG_C4_FCTRIM_MASK)
+#define MCG_C4_DRST_DRS_MASK                     0x60u
+#define MCG_C4_DRST_DRS_SHIFT                    5
+#define MCG_C4_DRST_DRS_WIDTH                    2
+#define MCG_C4_DRST_DRS(x)                       (((uint8_t)(((uint8_t)(x))<<MCG_C4_DRST_DRS_SHIFT))&MCG_C4_DRST_DRS_MASK)
+#define MCG_C4_DMX32                        0x80u
+#define MCG_C4_DMX32_MASK                        0x80u
+#define MCG_C4_DMX32_SHIFT                       7
+#define MCG_C4_DMX32_WIDTH                       1
+/* C5 Bit Fields */
+#define MCG_C5_PRDIV0_MASK                       0x1Fu
+#define MCG_C5_PRDIV0_SHIFT                      0
+#define MCG_C5_PRDIV0_WIDTH                      5
+#define MCG_C5_PRDIV0(x)                         (((uint8_t)(((uint8_t)(x))<<MCG_C5_PRDIV0_SHIFT))&MCG_C5_PRDIV0_MASK)
+#define MCG_C5_PLLSTEN0                     0x20u
+#define MCG_C5_PLLSTEN0_SHIFT                    5
+#define MCG_C5_PLLSTEN0_WIDTH                    1
+#define MCG_C5_PLLCLKEN0                    0x40u
+#define MCG_C5_PLLCLKEN0_MASK                    0x40u
+#define MCG_C5_PLLCLKEN0_SHIFT                   6
+#define MCG_C5_PLLCLKEN0_WIDTH                   1
+/* C6 Bit Fields */
+#define MCG_C6_VDIV0_MASK                        0x1Fu
+#define MCG_C6_VDIV0_SHIFT                       0
+#define MCG_C6_VDIV0_WIDTH                       5
+#define MCG_C6_VDIV0(x)                          (((uint8_t)(((uint8_t)(x))<<MCG_C6_VDIV0_SHIFT))&MCG_C6_VDIV0_MASK)
+#define MCG_C6_CME0                         0x20u
+#define MCG_C6_CME0_SHIFT                        5
+#define MCG_C6_CME0_WIDTH                        1
+#define MCG_C6_PLLS                         0x40u
+#define MCG_C6_PLLS_MASK                         0x40u
+#define MCG_C6_PLLS_SHIFT                        6
+#define MCG_C6_PLLS_WIDTH                        1
+#define MCG_C6_LOLIE0                       0x80u
+#define MCG_C6_LOLIE0_MASK                       0x80u
+#define MCG_C6_LOLIE0_SHIFT                      7
+#define MCG_C6_LOLIE0_WIDTH                      1
+/* S Bit Fields */
+#define MCG_S_IRCST                         0x1u
+#define MCG_S_IRCST_SHIFT                        0
+#define MCG_S_IRCST_WIDTH                        1
+#define MCG_S_OSCINIT0                      0x2u
+#define MCG_S_OSCINIT0_MASK                      0x2u
+#define MCG_S_OSCINIT0_SHIFT                     1
+#define MCG_S_OSCINIT0_WIDTH                     1
+#define MCG_S_CLKST_MASK                         0xCu
+#define MCG_S_CLKST_SHIFT                        2
+#define MCG_S_CLKST_WIDTH                        2
+#define MCG_S_CLKST(x)                           (((uint8_t)(((uint8_t)(x))<<MCG_S_CLKST_SHIFT))&MCG_S_CLKST_MASK)
+#define MCG_S_IREFST                        0x10u
+#define MCG_S_IREFST_MASK                        0x10u
+#define MCG_S_IREFST_SHIFT                       4
+#define MCG_S_IREFST_WIDTH                       1
+#define MCG_S_PLLST                         0x20u
+#define MCG_S_PLLST_SHIFT                        5
+#define MCG_S_PLLST_WIDTH                        1
+#define MCG_S_LOCK0                         0x40u
+#define MCG_S_LOCK0_MASK                         0x40u
+#define MCG_S_LOCK0_SHIFT                        6
+#define MCG_S_LOCK0_WIDTH                        1
+#define MCG_S_LOLS                          0x80u
+#define MCG_S_LOLS_SHIFT                         7
+#define MCG_S_LOLS_WIDTH                         1
+/* SC Bit Fields */
+#define MCG_SC_LOCS0                        0x1u
+#define MCG_SC_LOCS0_SHIFT                       0
+#define MCG_SC_LOCS0_WIDTH                       1
+#define MCG_SC_FCRDIV_MASK                       0xEu
+#define MCG_SC_FCRDIV_SHIFT                      1
+#define MCG_SC_FCRDIV_WIDTH                      3
+#define MCG_SC_FCRDIV(x)                         (((uint8_t)(((uint8_t)(x))<<MCG_SC_FCRDIV_SHIFT))&MCG_SC_FCRDIV_MASK)
+#define MCG_SC_FLTPRSRV                     0x10u
+#define MCG_SC_FLTPRSRV_SHIFT                    4
+#define MCG_SC_FLTPRSRV_WIDTH                    1
+#define MCG_SC_ATMF                         0x20u
+#define MCG_SC_ATMF_SHIFT                        5
+#define MCG_SC_ATMF_WIDTH                        1
+#define MCG_SC_ATMS                         0x40u
+#define MCG_SC_ATMS_SHIFT                        6
+#define MCG_SC_ATMS_WIDTH                        1
+#define MCG_SC_ATME                         0x80u
+#define MCG_SC_ATME_SHIFT                        7
+#define MCG_SC_ATME_WIDTH                        1
+/* ATCVH Bit Fields */
+#define MCG_ATCVH_ATCVH_MASK                     0xFFu
+#define MCG_ATCVH_ATCVH_SHIFT                    0
+#define MCG_ATCVH_ATCVH_WIDTH                    8
+#define MCG_ATCVH_ATCVH(x)                       (((uint8_t)(((uint8_t)(x))<<MCG_ATCVH_ATCVH_SHIFT))&MCG_ATCVH_ATCVH_MASK)
+/* ATCVL Bit Fields */
+#define MCG_ATCVL_ATCVL_MASK                     0xFFu
+#define MCG_ATCVL_ATCVL_SHIFT                    0
+#define MCG_ATCVL_ATCVL_WIDTH                    8
+#define MCG_ATCVL_ATCVL(x)                       (((uint8_t)(((uint8_t)(x))<<MCG_ATCVL_ATCVL_SHIFT))&MCG_ATCVL_ATCVL_MASK)
+/* C7 Bit Fields */
+#define MCG_C7_OSCSEL                       0x1u
+#define MCG_C7_OSCSEL_MASK                       0x1u
+#define MCG_C7_OSCSEL_SHIFT                      0
+#define MCG_C7_OSCSEL_WIDTH                      1
+/* C8 Bit Fields */
+#define MCG_C8_LOCS1                        0x1u
+#define MCG_C8_LOCS1_SHIFT                       0
+#define MCG_C8_LOCS1_WIDTH                       1
+#define MCG_C8_CME1                         0x20u
+#define MCG_C8_CME1_SHIFT                        5
+#define MCG_C8_CME1_WIDTH                        1
+#define MCG_C8_LOLRE                        0x40u
+#define MCG_C8_LOLRE_SHIFT                       6
+#define MCG_C8_LOLRE_WIDTH                       1
+#define MCG_C8_LOCRE1                       0x80u
+#define MCG_C8_LOCRE1_SHIFT                      7
+#define MCG_C8_LOCRE1_WIDTH                      1
+
+/*!
+ * @}
+ */ /* end of group MCG_Register_Masks */
+
+/* ----------------------------------------------------------------------------
+   -- RCM Peripheral Access Layer
+   ---------------------------------------------------------------------------- */
+
+/*!
+ * @addtogroup RCM_Peripheral_Access_Layer RCM Peripheral Access Layer
+ * @{
+ */
+
+/** RCM - Register Layout Typedef */
+typedef struct {
+  __I  uint8_t SRS0;                               /**< System Reset Status Register 0, offset: 0x0 */
+  __I  uint8_t SRS1;                               /**< System Reset Status Register 1, offset: 0x1 */
+       uint8_t RESERVED_0[2];
+  __IO uint8_t RPFC;                               /**< Reset Pin Filter Control register, offset: 0x4 */
+  __IO uint8_t RPFW;                               /**< Reset Pin Filter Width register, offset: 0x5 */
+       uint8_t RESERVED_1[1];
+  __I  uint8_t MR;                                 /**< Mode Register, offset: 0x7 */
+} RCM_Type, *RCM_MemMapPtr;
+
+/* ----------------------------------------------------------------------------
+   -- RCM - Register accessor macros
+   ---------------------------------------------------------------------------- */
+
+/*!
+ * @addtogroup RCM_Register_Accessor_Macros RCM - Register accessor macros
+ * @{
+ */
+
+
+/* RCM - Register accessors */
+#define RCM_SRS0_REG(base)                       ((base)->SRS0)
+#define RCM_SRS1_REG(base)                       ((base)->SRS1)
+#define RCM_RPFC_REG(base)                       ((base)->RPFC)
+#define RCM_RPFW_REG(base)                       ((base)->RPFW)
+#define RCM_MR_REG(base)                         ((base)->MR)
+
+/*!
+ * @}
+ */ /* end of group RCM_Register_Accessor_Macros */
+
+
+/* ----------------------------------------------------------------------------
+   -- RCM Register Masks
+   ---------------------------------------------------------------------------- */
+
+/*!
+ * @addtogroup RCM_Register_Masks RCM Register Masks
+ * @{
+ */
+
+/* SRS0 Bit Fields */
+#define RCM_SRS0_WAKEUP_MASK                     0x1u
+#define RCM_SRS0_WAKEUP_SHIFT                    0
+#define RCM_SRS0_WAKEUP_WIDTH                    1
+#define RCM_SRS0_WAKEUP(x)                       (((uint8_t)(((uint8_t)(x))<<RCM_SRS0_WAKEUP_SHIFT))&RCM_SRS0_WAKEUP_MASK)
+#define RCM_SRS0_LVD_MASK                        0x2u
+#define RCM_SRS0_LVD_SHIFT                       1
+#define RCM_SRS0_LVD_WIDTH                       1
+#define RCM_SRS0_LVD(x)                          (((uint8_t)(((uint8_t)(x))<<RCM_SRS0_LVD_SHIFT))&RCM_SRS0_LVD_MASK)
+#define RCM_SRS0_LOC_MASK                        0x4u
+#define RCM_SRS0_LOC_SHIFT                       2
+#define RCM_SRS0_LOC_WIDTH                       1
+#define RCM_SRS0_LOC(x)                          (((uint8_t)(((uint8_t)(x))<<RCM_SRS0_LOC_SHIFT))&RCM_SRS0_LOC_MASK)
+#define RCM_SRS0_LOL_MASK                        0x8u
+#define RCM_SRS0_LOL_SHIFT                       3
+#define RCM_SRS0_LOL_WIDTH                       1
+#define RCM_SRS0_LOL(x)                          (((uint8_t)(((uint8_t)(x))<<RCM_SRS0_LOL_SHIFT))&RCM_SRS0_LOL_MASK)
+#define RCM_SRS0_WDOG_MASK                       0x20u
+#define RCM_SRS0_WDOG_SHIFT                      5
+#define RCM_SRS0_WDOG_WIDTH                      1
+#define RCM_SRS0_WDOG(x)                         (((uint8_t)(((uint8_t)(x))<<RCM_SRS0_WDOG_SHIFT))&RCM_SRS0_WDOG_MASK)
+#define RCM_SRS0_PIN_MASK                        0x40u
+#define RCM_SRS0_PIN_SHIFT                       6
+#define RCM_SRS0_PIN_WIDTH                       1
+#define RCM_SRS0_PIN(x)                          (((uint8_t)(((uint8_t)(x))<<RCM_SRS0_PIN_SHIFT))&RCM_SRS0_PIN_MASK)
+#define RCM_SRS0_POR_MASK                        0x80u
+#define RCM_SRS0_POR_SHIFT                       7
+#define RCM_SRS0_POR_WIDTH                       1
+#define RCM_SRS0_POR(x)                          (((uint8_t)(((uint8_t)(x))<<RCM_SRS0_POR_SHIFT))&RCM_SRS0_POR_MASK)
+/* SRS1 Bit Fields */
+#define RCM_SRS1_JTAG_MASK                       0x1u
+#define RCM_SRS1_JTAG_SHIFT                      0
+#define RCM_SRS1_JTAG_WIDTH                      1
+#define RCM_SRS1_JTAG(x)                         (((uint8_t)(((uint8_t)(x))<<RCM_SRS1_JTAG_SHIFT))&RCM_SRS1_JTAG_MASK)
+#define RCM_SRS1_LOCKUP_MASK                     0x2u
+#define RCM_SRS1_LOCKUP_SHIFT                    1
+#define RCM_SRS1_LOCKUP_WIDTH                    1
+#define RCM_SRS1_LOCKUP(x)                       (((uint8_t)(((uint8_t)(x))<<RCM_SRS1_LOCKUP_SHIFT))&RCM_SRS1_LOCKUP_MASK)
+#define RCM_SRS1_SW_MASK                         0x4u
+#define RCM_SRS1_SW_SHIFT                        2
+#define RCM_SRS1_SW_WIDTH                        1
+#define RCM_SRS1_SW(x)                           (((uint8_t)(((uint8_t)(x))<<RCM_SRS1_SW_SHIFT))&RCM_SRS1_SW_MASK)
+#define RCM_SRS1_MDM_AP_MASK                     0x8u
+#define RCM_SRS1_MDM_AP_SHIFT                    3
+#define RCM_SRS1_MDM_AP_WIDTH                    1
+#define RCM_SRS1_MDM_AP(x)                       (((uint8_t)(((uint8_t)(x))<<RCM_SRS1_MDM_AP_SHIFT))&RCM_SRS1_MDM_AP_MASK)
+#define RCM_SRS1_EZPT_MASK                       0x10u
+#define RCM_SRS1_EZPT_SHIFT                      4
+#define RCM_SRS1_EZPT_WIDTH                      1
+#define RCM_SRS1_EZPT(x)                         (((uint8_t)(((uint8_t)(x))<<RCM_SRS1_EZPT_SHIFT))&RCM_SRS1_EZPT_MASK)
+#define RCM_SRS1_SACKERR_MASK                    0x20u
+#define RCM_SRS1_SACKERR_SHIFT                   5
+#define RCM_SRS1_SACKERR_WIDTH                   1
+#define RCM_SRS1_SACKERR(x)                      (((uint8_t)(((uint8_t)(x))<<RCM_SRS1_SACKERR_SHIFT))&RCM_SRS1_SACKERR_MASK)
+/* RPFC Bit Fields */
+#define RCM_RPFC_RSTFLTSRW_MASK                  0x3u
+#define RCM_RPFC_RSTFLTSRW_SHIFT                 0
+#define RCM_RPFC_RSTFLTSRW_WIDTH                 2
+#define RCM_RPFC_RSTFLTSRW(x)                    (((uint8_t)(((uint8_t)(x))<<RCM_RPFC_RSTFLTSRW_SHIFT))&RCM_RPFC_RSTFLTSRW_MASK)
+#define RCM_RPFC_RSTFLTSS_MASK                   0x4u
+#define RCM_RPFC_RSTFLTSS_SHIFT                  2
+#define RCM_RPFC_RSTFLTSS_WIDTH                  1
+#define RCM_RPFC_RSTFLTSS(x)                     (((uint8_t)(((uint8_t)(x))<<RCM_RPFC_RSTFLTSS_SHIFT))&RCM_RPFC_RSTFLTSS_MASK)
+/* RPFW Bit Fields */
+#define RCM_RPFW_RSTFLTSEL_MASK                  0x1Fu
+#define RCM_RPFW_RSTFLTSEL_SHIFT                 0
+#define RCM_RPFW_RSTFLTSEL_WIDTH                 5
+#define RCM_RPFW_RSTFLTSEL(x)                    (((uint8_t)(((uint8_t)(x))<<RCM_RPFW_RSTFLTSEL_SHIFT))&RCM_RPFW_RSTFLTSEL_MASK)
+/* MR Bit Fields */
+#define RCM_MR_EZP_MS_MASK                       0x2u
+#define RCM_MR_EZP_MS_SHIFT                      1
+#define RCM_MR_EZP_MS_WIDTH                      1
+#define RCM_MR_EZP_MS(x)                         (((uint8_t)(((uint8_t)(x))<<RCM_MR_EZP_MS_SHIFT))&RCM_MR_EZP_MS_MASK)
+
+/*!
+ * @}
+ */ /* end of group RCM_Register_Masks */
+
+
+/* RCM - Peripheral instance base addresses */
+/** Peripheral RCM base address */
+//#define RCM_BASE                                 (0x4007F000u)
+/** Peripheral RCM base pointer */
+#define RCM                                      ((RCM_Type *)RCM_BASE)
+#define RCM_BASE_PTR                             (RCM)
+/** Array initializer of RCM peripheral base addresses */
+#define RCM_BASE_ADDRS                           { RCM_BASE }
+/** Array initializer of RCM peripheral base pointers */
+#define RCM_BASE_PTRS                            { RCM }
+
+/* ----------------------------------------------------------------------------
+   -- RCM - Register accessor macros
+   ---------------------------------------------------------------------------- */
+
+/*!
+ * @addtogroup RCM_Register_Accessor_Macros RCM - Register accessor macros
+ * @{
+ */
+
+
+/* RCM - Register instance definitions */
+/* RCM */
+#define RCM_SRS0                                 RCM_SRS0_REG(RCM)
+#define RCM_SRS1                                 RCM_SRS1_REG(RCM)
+#define RCM_RPFC                                 RCM_RPFC_REG(RCM)
+#define RCM_RPFW                                 RCM_RPFW_REG(RCM)
+#define RCM_MR                                   RCM_MR_REG(RCM)
+
+/*!
+ * @}
+ */ /* end of group RCM_Register_Accessor_Macros */
+
+#define PORT_PCR_ISF_MASK                        0x1000000u
+#define OSC_CR_ERCLKEN_MASK                      0x80u
+#define PORT_PCR_MUX_MASK                        0x700u
+#define PORT_PCR_MUX_SHIFT                       8
+#define PORT_PCR_MUX_WIDTH                       3
+#define PORT_PCR_MUX(x)                          (((uint32_t)(((uint32_t)(x))<<PORT_PCR_MUX_SHIFT))&PORT_PCR_MUX_MASK)
+
+#define OSC_BASE                                 (0x40065000u)
+#define OSC                                      ((OSC_TypeDef *)OSC_BASE)
+
 
 #endif
 

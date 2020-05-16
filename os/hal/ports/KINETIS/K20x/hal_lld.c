@@ -93,6 +93,7 @@ void hal_lld_init(void) {
  *
  * @special
  */
+#if 0
 void k20x_clock_init(void) {
 #if !KINETIS_NO_INIT
 
@@ -230,5 +231,6 @@ void k20x_clock_init(void) {
 
 #endif /* !KINETIS_NO_INIT */
 }
+#endif
 
 /** @} */
