@@ -176,7 +176,7 @@ OSAL_IRQ_HANDLER(KINETIS_SPI0_IRQ_VECTOR) {
       SPID1.spi->PUSHR = 0xFF;
   } else {
     SPID1.spi->RSER &= ~SPIx_RSER_TCF_RE; // disable interrupt on frame complete, we're done.
-    // palSetPad(IOPORT4, 4); // de-assert CS line  // now under manual control
+    // palSetPad(IOPORT5, 4); // de-assert CS line  // now under manual control
     spi_stop_xfer(&SPID1);
     _spi_isr_code(&SPID1);
   }
@@ -205,7 +205,7 @@ OSAL_IRQ_HANDLER(KINETIS_SPI1_IRQ_VECTOR) {
     SPID2.spi->PUSHR = SPID2.txbuf[(SPID2.spi->TCR >> 16)];
   } else {
     SPID2.spi->RSER &= ~SPIx_RSER_TCF_RE; // disable interrupt on frame complete, we're done.
-    // palSetPad(IOPORT4, 4); // de-assert CS line  // now under manual control
+    // palSetPad(IOPORT5, 4); // de-assert CS line  // now under manual control
     spi_stop_xfer(&SPID2);
     _spi_isr_code(&SPID2);
   }
@@ -385,7 +385,7 @@ void spiRuntSetup(SPIDriver *spip) {
   spip->spi->CTAR[0] = KINETIS_SPI_TAR_BUSCLK_XZ(8);  // 8-bit frame size
   
   //  spip->spi->MCR |= SPIx_MCR_PCSIS(1); // set to active low for CS0
-  palSetPad(IOPORT4, 4); // clear the CS line
+  palSetPad(IOPORT5, 4); // clear the CS line
 }
 
 static void noopt4(SPIDriver *spip) {
@@ -406,7 +406,7 @@ void spi_start_xfer_runt(SPIDriver *spip) {
 
   spip->spi->MCR |= SPIx_MCR_DIS_RXF | SPIx_MCR_CLR_RXF | SPIx_MCR_DIS_TXF | SPIx_MCR_CLR_TXF; // disable fifos
   spip->spi->MCR &= ~SPIx_MCR_HALT; // clear the halt bit, chibios sets it every time the transfer is done
-  // palClearPad(IOPORT4, 4); // assert CS line  // this is now on "manual" control
+  // palClearPad(IOPORT5, 4); // assert CS line  // this is now on "manual" control
   
   spip->spi->SR |= SPIx_SR_TCF; // clear the TCF so it can flip
   spip->spi->RSER |= SPIx_RSER_TCF_RE; // enable interrupt on frame complete, to initiate chaining

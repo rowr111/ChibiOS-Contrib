@@ -648,6 +648,7 @@ typedef struct
 #define SIM_SCGC4_LLWU_WIDTH                     1
 /* SCGC5 Bit Fields */
 #define SIM_SCGC5_LPTIMER                   0x1u
+#define SIM_SCGC5_LPTIMER_MASK                   0x1u
 #define SIM_SCGC5_LPTIMER_SHIFT                  0
 #define SIM_SCGC5_LPTIMER_WIDTH                  1
 #define SIM_SCGC5_TSI                       0x20u
@@ -2095,7 +2096,39 @@ typedef struct {
 
 #define OSC_BASE                                 (0x40065000u)
 #define OSC                                      ((OSC_TypeDef *)OSC_BASE)
+#define LPTMR_CSR_TCF_MASK                       0x80u
+#define LPTMR_PSR_PBYP_MASK                      0x4u
+#define LPTMR_CSR_TEN_MASK                       0x1u
 
+#define LPTMR_CMR_COMPARE_MASK                   0xFFFFu
+#define LPTMR_CMR_COMPARE_SHIFT                  0
+#define LPTMR_CMR_COMPARE_WIDTH                  16
+#define LPTMR_CMR_COMPARE(x)                     (((uint32_t)(((uint32_t)(x))<<LPTMR_CMR_COMPARE_SHIFT))&LPTMR_CMR_COMPARE_MASK)
+
+#define LPTMR_CSR_TPS_MASK                       0x30u
+#define LPTMR_CSR_TPS_SHIFT                      4
+#define LPTMR_CSR_TPS_WIDTH                      2
+#define LPTMR_CSR_TPS(x)                         (((uint32_t)(((uint32_t)(x))<<LPTMR_CSR_TPS_SHIFT))&LPTMR_CSR_TPS_MASK)
+
+#define LPTMR_PSR_PCS_MASK                       0x3u
+#define LPTMR_PSR_PCS_SHIFT                      0
+#define LPTMR_PSR_PCS_WIDTH                      2
+#define LPTMR_PSR_PCS(x)                         (((uint32_t)(((uint32_t)(x))<<LPTMR_PSR_PCS_SHIFT))&LPTMR_PSR_PCS_MASK)
+
+#define WDOG_STCTRLH_STOPEN_MASK                 0x40u
+#define WDOG_STCTRLH_ALLOWUPDATE_MASK            0x10u
+#define WDOG_STCTRLH_CLKSRC_MASK                 0x2u
+#define WDOG_STCTRLH_WAITEN_MASK                 0x80u
+
+/* UNLOCK Bit Fields */
+#define WDOG_UNLOCK_WDOGUNLOCK_MASK              0xFFFFu
+#define WDOG_UNLOCK_WDOGUNLOCK_SHIFT             0
+#define WDOG_UNLOCK_WDOGUNLOCK_WIDTH             16
+#define WDOG_UNLOCK_WDOGUNLOCK(x)                (((uint16_t)(((uint16_t)(x))<<WDOG_UNLOCK_WDOGUNLOCK_SHIFT))&WDOG_UNLOCK_WDOGUNLOCK_MASK)
+#define WDOG_STCTRLH_BYTESEL_MASK                0x3000u
+#define WDOG_STCTRLH_BYTESEL_SHIFT               12
+#define WDOG_STCTRLH_BYTESEL_WIDTH               2
+#define WDOG_STCTRLH_BYTESEL(x)                  (((uint16_t)(((uint16_t)(x))<<WDOG_STCTRLH_BYTESEL_SHIFT))&WDOG_STCTRLH_BYTESEL_MASK)
 
 #endif
 
